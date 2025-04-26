@@ -1,0 +1,18 @@
+#color-button {
+  width: 1em;
+  height: 1em;
+  background-color: #00aa00; /* default yellow */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#color-popup {
+  display: none;
+  position: absolute !important;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 2px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

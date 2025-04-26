@@ -1,0 +1,88 @@
+:root {
+  --rt-modal-offset: 12px;
+  --rt-modal-width: 40vw;
+  --rt-modal-height: 16em;
+
+  --rt-color-primary: #006eff;
+  --rt-color-secondary: #d2d2d2;
+}
+
+.modal {
+  position: fixed;
+  top: -17em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--rt-modal-width);
+  min-height: var(--rt-modal-height);
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4),
+    -10px -10px 20px rgba(0, 0, 0, 0.4);
+  font-family: 'Def';
+  opacity: 0;
+  pointer-events: none;
+  transition: top 0.35s ease, opacity 0.35s ease;
+  z-index: 9999;
+}
+
+/* Modal visible state */
+.modal.show {
+  top: var(--rt-modal-offset);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-header {
+  padding: 5px 12px;
+  border-bottom: 1px solid #cecece;
+  justify-content: space-between;
+  align-items: center;
+  min-height: calc(5px + 1.8em);
+}
+
+.modal-header > h1 {
+  margin-block: 0;
+  font-size: 1.8em;
+}
+
+.modal-body {
+  min-height: calc(var(--rt-modal-height) - calc(10px + 3.6em));
+  padding: 5px 12px;
+  text-align: left;
+}
+
+.modal-footer {
+  border-top: 1px solid #cecece;
+  padding: 5px 12px;
+  gap: 8px;
+  justify-content: flex-end;
+  height: 1.8em;
+}
+
+.modal-btn {
+  background-color: red;
+  font-family: 'Def';
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  filter: brightness(1);
+}
+
+.modal-btn.reject {
+  background-color: var(--rt-color-secondary);
+}
+
+.modal-btn.confirm {
+  background-color: var(--rt-color-primary);
+  color: white;
+}
+
+.modal-btn:hover {
+  filter: brightness(0.85);
+}
+
+.modal-btn:active {
+  filter: brightness(1) !important;
+  transition: none;
+}

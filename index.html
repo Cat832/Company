@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My page</title>
+  </head>
+  <body>
+    <div class="gap-8 display-flex width-max">
+      <div class="interface">
+        <div class="desicion">
+          <div class="desicion-name">
+            <span class="desicion-name-txt" id="desicion-txt"> </span>
+          </div>
+
+          <div class="decision-list">
+            <table class="tradeoff-table" id="tradeoff-table">
+              <thead class="table-header">
+                <tr>
+                  <th class="table-header-cell">Option</th>
+                  <th class="table-header-cell">Description</th>
+                </tr>
+              </thead>
+              <tbody class="table-body" id="tradeoff-body">
+                <!-- Template:
+                <tr class="table-row">
+                  <td class="table-cell"></td>
+                  <td class="table-cell"></td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="desicion-options display-flex" id="desicion-options">
+            <!-- Template:
+            <button class="desicion-options-button [variant]"></button> -->
+          </div>
+        </div>
+      </div>
+
+      <div class="width-half second-half">
+        <span class="reputation-name">Reputation:</span>
+        <div class="progress-container">
+          <div id="progress-bar" class="progress-bar">
+            <span id="progress-int">0%</span>
+          </div>
+        </div>
+        <div class="display-flex chart-container">
+          <canvas id="chart"></canvas>
+          <div id="zoom-btn-row" class="display-flex flex-col">
+            <div class="color-picker-container">
+              <div id="color-button"></div>
+              <div id="color-popup">
+                <input
+                  type="text"
+                  id="hex-input"
+                  maxlength="6"
+                  placeholder="00aa00"
+                />
+              </div>
+            </div>
+            <button id="reset-zoom-btn" title="Reset zoom">🔁</button>
+          </div>
+        </div>
+        <div class="integer-container">
+          <span id="money-int">Current money: $25.000</span>
+        </div>
+        <div class="income-list">
+          <table class="income-table">
+            <tbody class="income-table-body" id="income-table">
+              <!-- <tr class="income-table-row">
+                <td class="income-table-cell">Default income</td>
+                <td class="income-table-cell profit">$5.000 p/m</td>
+              </tr>
+              <tr class="income-table-row">
+                <td class="income-table-cell">Default expenses</td>
+                <td class="income-table-cell noprofit">-$412 p/m</td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="modal">
+      <div class="modal-header display-flex">
+        <h1 id="modal-title"></h1>
+        <button class="btn-close" id="modal-close"></button>
+      </div>
+      <div class="modal-body">
+        <span id="modal-text"></span>
+      </div>
+      <div class="modal-footer display-flex" id="modal-footer">
+        <button class="modal-btn reject" id="cancel-btn">cancel</button>
+        <button class="modal-btn confirm" id="confirm-btn">confirm</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/scripts/main.ts"></script>
+  </body>
+</html>

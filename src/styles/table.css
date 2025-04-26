@@ -1,0 +1,165 @@
+/* General Table Styling */
+.tradeoff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0px;
+  margin-top: 8px;
+  font-family: 'Def';
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  /* background-color: #2C3E50; */
+  /* background-color: #4A4A4A; */
+  /* background-color: #1E5631; */
+  /* background-color: #800020; */
+  background-color: #006d77;
+
+  color: white;
+}
+
+.table-header-cell {
+  padding: 10px;
+  text-align: left;
+  font-family: 'Semi-Bold';
+  font-size: 0.9em;
+}
+
+.table-body {
+  font-size: 0.8em;
+}
+.table-row {
+  border-bottom: 1px solid #ddd;
+}
+
+.table-body:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table-row:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background-color: #e0f7fa;
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 600px) {
+  .table-header-cell,
+  .table-cell {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+.income-list {
+  max-height: 10em !important;
+  overflow: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin: 20px 0;
+  border-radius: 12px;
+}
+
+.income-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Def';
+  border-radius: 12px;
+}
+
+.income-table-row {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.income-table-row:last-child {
+  border-bottom: none;
+}
+
+.income-table-cell {
+  padding: 10px 16px;
+  font-size: 15px;
+  color: #333;
+}
+
+.income-table-cell:first-child {
+  font-family: 'Semi-Bold';
+  color: #1b1b1b;
+}
+
+.profit {
+  font-weight: 600;
+  color: #2e7d32;
+  text-align: right;
+}
+
+.noprofit {
+  font-weight: 600;
+  color: #7d2e2e;
+  text-align: right;
+}
+
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+  margin: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal-table-head {
+  background-color: #4a6fa5;
+  color: white;
+}
+
+.modal-table-th {
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.modal-table-row {
+  transition: background-color 0.2s ease;
+}
+
+.modal-table-row:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.modal-table-row:hover {
+  background-color: #e9ecef;
+}
+
+.modal-table-cell {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.modal-table-cell:first-child {
+  font-weight: 600;
+  color: #343a40;
+}
+
+.modal-table-cell:last-child {
+  font-family: 'Def';
+  color: #2c3e50;
+}

@@ -1,0 +1,16 @@
+{
+    "1": {
+        "title": "Company",
+        "description": "The company is named \"Scrubdaddy\" with an annual income of ~$600000.",
+        "options": {
+            "footer": {
+                "hideConfirm": true,
+                "hideCancel": true
+            }
+        }
+    },
+    "2": {
+        "title": "Company",
+        "description": "The company is named \"Heiniken\" with an annual income of ~-$7000"
+    }
+}
