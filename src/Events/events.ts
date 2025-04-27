@@ -1,7 +1,3 @@
-// import { modal, stats } from '../scripts/main';
-// import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
-// import { buildCompany, Tier } from './grc';
-
 import { modal, pickRandom, stats } from '../scripts/main';
 import { Company } from '../types/main';
 import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
@@ -397,3 +393,4 @@ export const Advertisment = new Eventbuilder({
     ];
   },
 });
+

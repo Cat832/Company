@@ -181,6 +181,7 @@ export abstract class stats {
     //Cash in
     let incomeSalery = 0;
     for (const income of this._incomes) {
+
       if ((income.disbandYearnumber || Infinity) <= this.yearNumber) {
         this._incomes = deleteWithName(income.name, this._incomes);
       } else {
