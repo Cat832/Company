@@ -73,9 +73,10 @@ export abstract class stats {
   public static currentTier: number = 1;
   public static yearNumber: number = 0;
   public static properties: Property[] = [];
+  private static _transmissions: any[] = [];
   private static _reputation: number = 50;
   private static _economy: number[] = [startingMoney];
-  private static _incomes: Income[] = [
+  public static incomes: Income[] = [
     {
       name: 'Default earnings',
       annual: 400,
@@ -86,18 +87,26 @@ export abstract class stats {
   ];
   public get totalProfit() {
     let qr = 0;
-    for (const income of stats._incomes) {
+    for (const income of stats.incomes) {
       qr += income.annual;
     }
     return qr;
+  }
+  public static getIndexedTransmission(indexFromEnd: number) {
+    return stats._transmissions[
+      stats._transmissions.length - (indexFromEnd + 1)
+    ];
+  }
+  public static get lastTransmission() {
+    return getLast(stats._transmissions);
   }
   private static salery: number = 0;
   public static get reputation(): number {
     return this._reputation;
   }
   public static updateIncomes() {
-    updateIncometable(this._incomes, (nl) => {
-      this._incomes = nl;
+    updateIncometable(this.incomes, (nl) => {
+      this.incomes = nl;
       this.updateIncomes();
     });
     updateIncomelist();
@@ -136,7 +145,7 @@ export abstract class stats {
       CompanyChart.update();
     }
     moneyInt.innerHTML = `Current money: $${formatNumberWithPeriods(
-      parseInt((this._economy[this._economy.length - 1]).toFixed(0))
+      parseInt(this._economy[this._economy.length - 1].toFixed(0))
     )}`;
   }
   public static simulateRandomEvent() {
@@ -144,7 +153,7 @@ export abstract class stats {
     let index = Math.floor(Math.random() * possibleEvents.length);
     let element = possibleEvents[index];
     while (!validChoice) {
-      if (!element.shouldSkip()) {
+      if (!element.shouldSkip() && element.tier !== 0) {
         validChoice = true;
       } else {
         index = Math.floor(Math.random() * possibleEvents.length);
@@ -155,11 +164,24 @@ export abstract class stats {
     simulateEvent(element);
     updateLinks();
   }
+  public static simulateSpecificEvent(id: string) {
+    let options = possibleEvents.filter((v) => v.id == id);
+    if (options.length == 0) {
+      console.warn('Event not found, random event triggered instead');
+      this.simulateRandomEvent();
+    } else {
+      if (options.length > 1) {
+        console.warn('Multiple events found, first in list triggered');
+      }
+      simulateEvent(options[0]);
+      updateLinks();
+    }
+  }
   public static addIncome(a: Income) {
     let isOriginal = false;
     let instance = 0;
     while (!isOriginal) {
-      let qorg = isOriginalInList(a, this._incomes);
+      let qorg = isOriginalInList(a, this.incomes);
       if (qorg) {
         instance++;
         a.name = `${a.name.replace(`(${instance - 1})`, '')} (${instance})`;
@@ -167,7 +189,7 @@ export abstract class stats {
         break;
       }
     }
-    this._incomes.push(a);
+    this.incomes.push(a);
     this.updateIncomes();
   }
   public static addProperty(a: Property) {
@@ -177,13 +199,12 @@ export abstract class stats {
   public static addMoney(num: number) {
     this.salery += num;
   }
-  public static simulateYear() {
+  public static simulateYear(id?: string) {
     //Cash in
     let incomeSalery = 0;
-    for (const income of this._incomes) {
-
+    for (const income of this.incomes) {
       if ((income.disbandYearnumber || Infinity) <= this.yearNumber) {
-        this._incomes = deleteWithName(income.name, this._incomes);
+        this.incomes = deleteWithName(income.name, this.incomes);
       } else {
         incomeSalery += income.annual;
       }
@@ -193,10 +214,10 @@ export abstract class stats {
     this.money = (currentMoney || 0) + this.salery;
     this.salery = 0;
 
-    for (const income of this._incomes) {
+    for (const income of this.incomes) {
       if (!income.nonDynamic) income.annual = growRandom(income.annual);
       if (income.annual == 0) {
-        this._incomes = deleteWithName(income.name, this._incomes);
+        this.incomes = deleteWithName(income.name, this.incomes);
       }
     }
 
@@ -217,7 +238,7 @@ export abstract class stats {
       //Find random earnings to go rogue (so that you have to disband 😞)
       let randomPositiveIncome: Income;
       const options: Income[] = [];
-      for (const element of this._incomes) {
+      for (const element of this.incomes) {
         if (element.annual > 0 && !element.nonDynamic && !element.safe)
           options.push(element);
       }
@@ -279,8 +300,15 @@ export abstract class stats {
     if (this.money <= 0 || this._reputation <= 0) {
       losePlayer();
     }
-    this.simulateRandomEvent();
+    if (id !== undefined) {
+      this.simulateSpecificEvent(id);
+    } else {
+      this.simulateRandomEvent();
+    }
     this.yearNumber++;
+  }
+  public static write<T>(a: T) {
+    this._transmissions.push(a);
   }
 }
 stats.updateIncomes();
@@ -298,7 +326,7 @@ stats.updateProperties();
 desicionManager.listenFor = (a) => {
   stats.reputation = stats.reputation + (a.reputationGain || 0);
   stats.addMoney(a.moneyGain || 0);
-  stats.simulateYear();
+  stats.simulateYear(a.triggerEvent);
   if (a.propertyGain) {
     stats.addProperty(a.propertyGain);
   }
@@ -318,6 +346,8 @@ import {
   PropertyFire,
   Stockmarket,
   TooMuchProducts,
+  LawsuitPersonal,
+  HarrasmentClaim,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
@@ -327,8 +357,10 @@ const possibleEvents: Eventbuilder[] = [
   PropertyFire,
   Hotdogshop,
   Dropshipping,
-  TooMuchProducts,  
-  Advertisment
+  TooMuchProducts,
+  Advertisment,
+  LawsuitPersonal,
+  HarrasmentClaim,
 ];
 
 stats.simulateRandomEvent();

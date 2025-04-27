@@ -20,6 +20,7 @@ export function generateLargeMoney(
 
 export type eventConfig = {
   generate(id: string): [Interaction, Company | undefined];
+  id: string;
   shouldSkip?(): boolean;
   tier: Tier;
   oneTime?: boolean;
@@ -28,10 +29,12 @@ export type eventConfig = {
 export class Eventbuilder {
   tier: Tier;
   oneTime: boolean;
+  id: string;
   shouldSkip: () => boolean;
   generate: (id: string) => [Interaction, Company | undefined];
-  constructor({ generate, tier, oneTime, shouldSkip }: eventConfig) {
+  constructor({ generate, tier, oneTime, shouldSkip, id }: eventConfig) {
     this.oneTime = oneTime == undefined ? false : oneTime;
+    this.id = id;
     if (shouldSkip == undefined) {
       this.shouldSkip = function () {
         return false;

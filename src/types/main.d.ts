@@ -61,6 +61,8 @@ export type ButtonResult = {
   propertyGain?: Property;
   incomeGain?: Income;
   reputationGain?: number;
+  /**Event id*/
+  triggerEvent?: string;
   // toolGain?: Tool;
 };
 

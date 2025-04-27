@@ -3,6 +3,8 @@ import { ModalConfig } from '../scripts/modal';
 import { Company } from '../types/main';
 import companiesRawData from './companies.json';
 import productsRawData from './products.json';
+import peopleRawData from './people.json';
+let people = peopleRawData as { firstNames: string[]; lastNames: string[] };
 let products = [...(productsRawData as string[])];
 let companies = [...(companiesRawData as string[])];
 
@@ -16,14 +18,21 @@ export function grc(): string {
   }
   return element;
 }
+export function grp(): string {
+  return `${
+    people.firstNames[Math.floor(Math.random() * people.firstNames.length)]
+  } ${people.lastNames[Math.floor(Math.random() * people.lastNames.length)]}`;
+}
+
 /**Tier:
+ * `0`: can't be instanciated for companies, functions to indicate that event is "specific" and can only be called using other events.
  * `1-3`: in debt,
  * `4-5`: low income,
  * `6-7`: regular income,
  * `8-9`: multimillion income,
  * `10`: multibillion income
  */
-export type Tier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type Tier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export function formatNumberWithPeriods(num: number): string {
   return (
     num

@@ -1,10 +1,11 @@
 import { modal, pickRandom, stats } from '../scripts/main';
 import { Company } from '../types/main';
 import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
-import { buildCompany, getRandomProduct } from './grc';
+import { buildCompany, getRandomProduct, grp } from './grc';
 
 export const Stockmarket = new Eventbuilder({
   tier: 1,
+  id: 'stockmarket',
   generate(_id) {
     let money = generateLargeMoney(0, 4, 1000);
     return [
@@ -49,6 +50,7 @@ export const Stockmarket = new Eventbuilder({
 
 export const PropertyFire = new Eventbuilder({
   tier: 1,
+  id: 'propertyfire',
   shouldSkip() {
     let options = stats.properties.filter((v) => !(v.damaged || v.immune));
     return options.length == 0;
@@ -87,6 +89,7 @@ export const PropertyFire = new Eventbuilder({
 
 export const Hotdogshop = new Eventbuilder({
   tier: 1,
+  id: 'hotdogshop',
   oneTime: true,
   generate(id) {
     let stand: Company = {
@@ -143,6 +146,7 @@ export const Hotdogshop = new Eventbuilder({
 
 export const Dropshipping = new Eventbuilder({
   tier: 1,
+  id: 'dropshipping',
   oneTime: false,
   generate(_id) {
     let product1 = getRandomProduct();
@@ -242,6 +246,7 @@ export const Dropshipping = new Eventbuilder({
 
 export const TooMuchProducts = new Eventbuilder({
   tier: 1,
+  id: 'toomuchproducts',
   generate(_id) {
     let productPrice = generateLargeMoney(40, 90, 30);
     return [
@@ -297,6 +302,7 @@ export const TooMuchProducts = new Eventbuilder({
 
 export const Advertisment = new Eventbuilder({
   tier: 1,
+  id: 'advertisment',
   generate(id) {
     let company = buildCompany(4);
     let coffeePrice = generateLargeMoney(3, 6, 500);
@@ -394,3 +400,104 @@ export const Advertisment = new Eventbuilder({
   },
 });
 
+export const LawsuitPersonal = new Eventbuilder({
+  id: 'lawsuitpersonal',
+  tier: 0,
+  generate(_id) {
+    let person = stats.lastTransmission as string;
+    let amount = stats.getIndexedTransmission(1) as number;
+    return [
+      {
+        title: `&#9878;&#65039; ${person} is sueing you! They want to settle for <r>$${amount}</r>.`,
+        buttons: [
+          {
+            text: 'settle',
+            description: `Pay <r>$${amount}</r> and just get this over with.`,
+            variant: 'succes',
+            onClick() {
+              return { moneyGain: -amount };
+            },
+          },
+          {
+            text: 'fight',
+            description: `Fight a legal battle, and risk your reputation.`,
+            variant: 'error',
+            onClick() {
+              let caseWon = chance(50);
+              modal.changeModal({
+                title: `Case ${caseWon ? 'won' : 'lost'}`,
+                description: caseWon
+                  ? "You won the case, and didn't lose anything."
+                  : `Not only did you lose <span class="red">$${amount}</span>, you also lost 10% reputation.`,
+                options: {
+                  footer: {
+                    hideConfirm: true,
+                    cancelText: 'okay',
+                  },
+                },
+              });
+              modal.show();
+              return {
+                moneyGain: caseWon ? 0 : -amount,
+                reputationGain: caseWon ? 0 : -15,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const HarrasmentClaim = new Eventbuilder({
+  tier: 1,
+  id: 'harassmentclaim',
+  generate(_id) {
+    let person = grp();
+    let harasser = grp();
+    let priceFire = generateLargeMoney(2, 6, 500);
+    let lawsuitPrice = generateLargeMoney(4, 10, 700);
+    return [
+      {
+        title: `🤕 “${person}” claims they are being harassed by one of your employees; “${harasser}”. They want you to fire them.`,
+        buttons: [
+          {
+            text: `fire ${harasser}`,
+            description: `Fire ${harasser}, increasing your default expenses by <r>$${priceFire}</r>.`,
+            variant: 'succes',
+            onClick() {
+              stats.incomes[1].annual += 500;
+              stats.updateIncomes();
+              return {};
+            },
+          },
+          {
+            text: `demote ${harasser}`,
+            description:
+              'Lose no money, but <r>6%</r> reputation for letting a harasser work in your company.',
+            variant: 'warning',
+            onClick() {
+              return {
+                reputationGain: -6,
+              };
+            },
+          },
+          {
+            text: 'do nothing',
+            description: `Do nothing and risk a lawsuit`,
+            variant: 'error',
+            onClick() {
+              stats.write(lawsuitPrice);
+              stats.write(person);
+              return {
+                triggerEvent: 'lawsuitpersonal',
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
