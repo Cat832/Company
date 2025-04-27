@@ -1,15 +1,33 @@
 export type Tool = 'Media team';
 
 export type Property = {
+  /**Name of property.*/
   name: string;
+  /**Fill in blank: `<i class="fas fa-`___`"`></i>`*/
   icon: string;
+
+  /**The first value of property.*/
   startedAt: number;
+  /**Upon initiliazation should be equal to `startedAt`.*/
   value: number;
+
+  /**How much it will cost to repair.*/
   onDamagePrice: number;
-  onSell?(): void;
+  /****Do not touch in initiliazation**. References if the property if damaged*/
   damaged?: boolean;
-  prependInModal?: string;
+  /**If true property can't be damaged.*/
   immune?: boolean;
+
+  /**Function is called when property is sold.*/
+  onSell?(): void;
+  /**Is shown in the modal as *information* about what will happen when you sell the property.*/
+  sellDescription?: string;
+  /**Is shown in the modal *title* before the property name.*/
+  prependInModal?: string;
+  /**If true, the name is not shown in the title the modal.*/
+  hideNameInModal?: boolean;
+
+  /**Min and max of the grow percentage each year. Set to [0, 0] if you want the property value to be non-dynamic.*/
   growVals?: [number, number];
 };
 
@@ -41,7 +59,7 @@ export type Company = {
   income: number;
   reputation: number;
   /**How much *they* own of **the player**.*/
-  percentOwning: number;
+  percentOwning?: number;
 };
 
 export type Variant = 'error' | 'succes' | 'info' | 'warning';

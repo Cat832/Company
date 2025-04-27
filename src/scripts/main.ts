@@ -32,10 +32,10 @@ function updateProgress(percent: number) {
   progressBar.style.width = `${percent}%`;
   progressInt.innerText = `${Math.round(percent)}%`;
 }
-function getLast<T>(array: T[]) {
+export function getLast<T>(array: T[]) {
   return array[array.length - 1];
 }
-function pickRandom<T>(array: T[]): T {
+export function pickRandom<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
 let CompanyChart = buildChart({
@@ -128,9 +128,18 @@ export abstract class stats {
     )}`;
   }
   public static simulateRandomEvent() {
+    let validChoice = false;
     let index = Math.floor(Math.random() * possibleEvents.length);
     let element = possibleEvents[index];
-    if (element.oneTime) possibleEvents.splice(index, 1);
+    while (!validChoice) {
+      if (!element.shouldSkip()) {
+        validChoice = true;
+      } else {
+        index = Math.floor(Math.random() * possibleEvents.length);
+        element = possibleEvents[index];
+      }
+      if (element.oneTime) possibleEvents.splice(index, 1);
+    }
     simulateEvent(element);
     updateLinks();
   }
@@ -181,10 +190,10 @@ export abstract class stats {
     (
       document.querySelectorAll('.property') as NodeListOf<HTMLDivElement>
     ).forEach((element, i) => {
-      console.log('property found');
       let property = this.properties[i];
       if (property.damaged) return;
       let growValues = property.growVals || [-10, 20];
+      if (growValues.every((value) => value === 0)) return;
       let newValue = riseRandom(property.value, growValues[0], growValues[1]);
       spawnCash(element, newValue - property.value);
       property.value = newValue;
@@ -230,7 +239,7 @@ export abstract class stats {
 
     //For properties
     let options = this.properties.filter((v) => !(v.damaged || v.immune));
-    if (options.length > 0 && chance(this.propertyBreakchance)) {
+    if (options.length > 0 && chance(20)) {
       let randomProperty: Property;
       randomProperty = pickRandom(options);
 
@@ -274,7 +283,9 @@ desicionManager.listenFor = (a) => {
   stats.reputation = stats.reputation + (a.reputationGain || 0);
   stats.addMoney(a.moneyGain || 0);
   stats.simulateYear();
-  if (a.propertyGain) stats.addProperty(a.propertyGain);
+  if (a.propertyGain) {
+    stats.addProperty(a.propertyGain);
+  }
   if (a.incomeGain) stats.addIncome(a.incomeGain);
 };
 
@@ -284,11 +295,15 @@ import {
   Eventbuilder,
   generateLargeMoney,
 } from '../Events/eventBuilder';
-import { Stockmarket } from '../Events/events';
+import { Hotdogshop, PropertyFire, Stockmarket } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
 
-const possibleEvents: Eventbuilder[] = [Stockmarket];
+const possibleEvents: Eventbuilder[] = [
+  Stockmarket,
+  PropertyFire,
+  Hotdogshop,
+];
 
 stats.simulateRandomEvent();
 

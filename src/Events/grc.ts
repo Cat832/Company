@@ -123,12 +123,6 @@ export function companyToStr(c: Company) {
       <td class="modal-table-cell">Reputation</td>
       <td class="modal-table-cell">${c.reputation}%</td>
     </tr>
-    <!--<tr class="modal-table-row">
-      <td class="modal-table-cell">${
-        c.percentOwning < 0 ? 'You own' : 'They own'
-      }</td>
-      <td class="modal-table-cell">${Math.abs(c.percentOwning)}%</td>
-    </tr>-->
   </tbody>
 </table>`;
 }

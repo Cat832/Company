@@ -33,8 +33,15 @@ const desicionManager = {
     },
   },
   fillTextElement(x: string | Node) {
-    if (typeof x == 'string') this.textElement.innerHTML = x;
-    else this.textElement.appendChild(x);
+    if (typeof x == 'string') {
+      this.textElement.innerHTML = x
+        .replace('<g>', '<span class="green">')
+        .replace('<r>', '<span class="red">')
+        .replace('</g>', '</span>')
+        .replace('</r>', '</span>');
+    } else {
+      this.textElement.appendChild(x);
+    }
   },
   fillTableElement(x: InteractionButton[]) {
     this.table.bodyElement.innerHTML = '';
@@ -43,7 +50,11 @@ const desicionManager = {
       const namecell = this.table.buildTc(row);
       const desccell = this.table.buildTc(row);
       namecell.innerHTML = btn.text;
-      desccell.innerHTML = btn.description;
+      desccell.innerHTML = btn.description
+        .replace('<g>', '<span class="green">')
+        .replace('<r>', '<span class="red">')
+        .replace('</g>', '</span>')
+        .replace('</r>', '</span>');
     });
   },
   fillButtonRowElement(x: InteractionButton[]) {

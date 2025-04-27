@@ -23,7 +23,7 @@ export default function buildChart({
         {
           label: 'worth',
           data: values,
-          tension: 0.1,
+          tension: 0,
           fill: true,
           borderColor: lineColor,
           pointRadius: 0.2,

@@ -52,9 +52,9 @@
   border-bottom: none;
 }
 
-.table-row:hover {
+/* .table-row:hover {
   background-color: #e0f7fa;
-}
+} */
 
 /* Responsive Styling */
 @media screen and (max-width: 600px) {

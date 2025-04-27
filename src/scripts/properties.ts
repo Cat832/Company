@@ -45,12 +45,14 @@ export function updateProperties(
       </table>`;
     propertyElement.onclick = () => {
       modal.changeModal({
-        title: `${v.damaged ? 'Repair' : v.prependInModal || 'Sell'} ${v.name}?`,
+        title: `${v.damaged ? 'Repair' : v.prependInModal || 'Sell '}${
+          v.hideNameInModal ? '' : v.name
+        }?`,
         description: `${
           v.damaged
             ? 'You cannot sell this property due to it being damaged.'
-            : `Note that properties gain value over time, you could be gaining more from this!`
-        }${modalTable}`,
+            : v.sellDescription || ''
+        }${modalTable}${v.immune ? 'This property cannot be damaged.' : ''}`,
         onConfirm() {
           onChange({
             moneyGain: v.damaged ? -v.onDamagePrice : v.value,

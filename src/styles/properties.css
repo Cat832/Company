@@ -1,72 +1,73 @@
 .properties-title {
-    background-color: #006d77;
-    padding: 12px;
-    border-radius: 1em 1em 0 0;
-    justify-content: space-between;
-    vertical-align: center;
-    align-items: center;
+  background-color: #006d77;
+  padding: 12px;
+  border-radius: 1em 1em 0 0;
+  justify-content: space-between;
+  vertical-align: center;
+  align-items: center;
 }
 
 .properties-title-span {
-    font-size: 1.3em;
-    color: white;
-    font-family: 'Def';
+  font-size: 1.3em;
+  color: white;
+  font-family: 'Def';
 }
 
 .info-btn-wrapper {
-    background-color: white;
-    border-radius: 50%;
-    transform: scale(0.);
+  background-color: white;
+  border-radius: 50%;
+  transform: scale(0);
 }
 
-.info-btn { 
-    font-size: 1.5em;
-    transform: scale(1.1);
-    cursor: pointer;
-    color: rgb(40, 180, 255)
+.info-btn {
+  font-size: 1.5em;
+  transform: scale(1.1);
+  cursor: pointer;
+  color: rgb(40, 180, 255);
 }
 
 .properties {
-    background-color: #eeeeee;
-    border-radius: 0 0 1em 1em;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  background-color: #eeeeee;
+  border-radius: 0 0 1em 1em;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
 }
 
 .properties-inner {
-    gap: 0.8em;
-    padding: 12px;
-    font-size: 1.5em;
-    flex-wrap: wrap;
-
-    
+  gap: 0.8em;
+  padding: 12px;
+  font-size: 1.5em;
+  flex-wrap: wrap;
 }
 
 .property {
-    background-color: white;
-    padding: 12px;
-    border-radius: 0.5em;
-    width: 1.2em;
-    height: 1.2em;
-    text-align: center;
-    transition: 0.3s ease-in-out;
+  background-color: white;
+  padding: 12px;
+  border-radius: 0.5em;
+  width: 1.2em;
+  height: 1.2em;
+  text-align: center;
+  cursor: pointer;
+}
+
+.property i.fas {
+  transition: 0.3s ease-in-out;
+  width: 100%;
+  height: 100%;
 }
 
 .property.damaged {
-    background-color: rgb(255, 188, 188);
+  background-color: rgb(255, 188, 188);
 }
 
-
-.property:hover {
-    color: rgb(0, 94, 255);
-    cursor: pointer;
+.property:hover i.fas {
+  color: rgb(0, 94, 255);
 }
-.property.damaged:hover {
-    color: rgb(255, 0, 0);
-    cursor: pointer;
+.property.damaged:hover i.fas {
+  color: rgb(255, 0, 0);
 }
 
 .NA-properties {
-    font-family: 'Def';
-    color: #373737;
-    font-size: 0.6em;
+  font-family: 'Def';
+  color: #373737;
+  font-size: 0.6em;
 }
