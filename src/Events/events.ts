@@ -5,7 +5,7 @@
 import { modal, pickRandom, stats } from '../scripts/main';
 import { Company } from '../types/main';
 import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
-import { getRandomProduct } from './grc';
+import { buildCompany, getRandomProduct } from './grc';
 
 export const Stockmarket = new Eventbuilder({
   tier: 1,
@@ -106,9 +106,10 @@ export const Hotdogshop = new Eventbuilder({
           {
             text: 'buy',
             variant: 'succes',
-            description: `Buy <span class="blue modal-link" aria-description="${id}">“${stand.name}”</span> for <g>$${price}</g>.`,
+            description: `Buy <span class="blue modal-link" aria-description="${id}">“${stand.name}”</span> for <r>$${price}</r>.`,
             onClick() {
               return {
+                moneyGain: -price,
                 propertyGain: {
                   name: 'hotdog stand',
                   icon: 'hotdog',
@@ -161,7 +162,7 @@ export const Dropshipping = new Eventbuilder({
         title: 'Dropshipping failed...',
         description: `You will now have to pay <r>$${Math.abs(
           moneyGain
-        )}</r> annualy for 3 years to clean up this mess. `,
+        )}</r> annually for 3 years to clean up this mess. `,
         options: {
           footer: {
             hideConfirm: true,
@@ -267,10 +268,13 @@ export const TooMuchProducts = new Eventbuilder({
                   onDamagePrice: productPrice / 15,
                   startedAt: productPrice / 4,
                   value: productPrice / 4,
-                  growVals: [-2, 6],
+                  growVals: [3, 6],
                   sector: 'industry',
                   hideNameInModal: true,
                   prependInModal: 'Sell products',
+                  sellDescription: `Note that you bought this warehouse for <span class="green">$${
+                    productPrice * 2
+                  }</span>.`,
                 },
                 moneyGain: -(productPrice / 4),
               };
@@ -279,16 +283,117 @@ export const TooMuchProducts = new Eventbuilder({
           {
             text: 'sell now',
             variant: 'error',
-            description: `Sell the products now for <g>$${productPrice / 4}</g>`,
+            description: `Sell the products now for <g>$${
+              productPrice / 4
+            }</g>`,
             onClick() {
               return {
-                moneyGain: productPrice / 4
-              }
+                moneyGain: productPrice / 4,
+              };
             },
           },
         ],
       },
       undefined,
+    ];
+  },
+});
+
+export const Advertisment = new Eventbuilder({
+  tier: 1,
+  generate(id) {
+    let company = buildCompany(4);
+    let coffeePrice = generateLargeMoney(3, 6, 500);
+    return [
+      {
+        title: `📰 Your media team decides that it's time to get advertisement. You can advertise in coffee shops, or on more effective billboards. Be warned: <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> already has advirtisement on these billboards.`,
+        buttons: [
+          {
+            text: 'Buy in coffeeshops',
+            description: `Pay <r>$${coffeePrice}</r> for around <g>$${
+              coffeePrice / 10
+            }</g> annually.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -coffeePrice,
+                incomeGain: {
+                  name: 'Advertisment in coffeshops',
+                  annual: coffeePrice / 10,
+                  disbandable: true,
+                },
+              };
+            },
+          },
+          {
+            text: 'Buy in billboards',
+            description: `Pay <r>$${
+              coffeePrice * 1.5
+            }</r> for a 65% chance that “${
+              company.name
+            }” will let you advertise on their billboards (that make around <g>$${
+              coffeePrice / 5
+            }</g> annually).`,
+            variant: 'warning',
+            onClick() {
+              let gotPermission = chance(65);
+              modal.changeModal({
+                title: `Permission ${gotPermission ? 'granted' : 'denied'}.`,
+                description:
+                  `You now have paid <span class="red">$${
+                    coffeePrice * 1.5
+                  }</span> ` + gotPermission
+                    ? `for an extra income of around <span class="green">$${
+                        coffeePrice / 5
+                      }</span> annually.`
+                    : `for nothing.`,
+                options: {
+                  footer: {
+                    hideCancel: gotPermission,
+                    hideConfirm: !gotPermission,
+                    cancelText: 'okay',
+                    confirmText: 'okay',
+                  },
+                },
+              });
+              modal.show();
+              return {
+                incomeGain: gotPermission
+                  ? {
+                      name: 'Advertisment on billboards',
+                      annual: coffeePrice / 10,
+                      disbandable: true,
+                    }
+                  : undefined,
+                moneyGain: -(coffeePrice * 1.5),
+              };
+            },
+          },
+          {
+            text: 'Decline advertisment',
+            description: `Lose around <r>$${
+              coffeePrice / 40
+            }</r> each year due to missing out on advertisment.`,
+            variant: 'error',
+            onClick() {
+              return {
+                incomeGain: {
+                  name: 'Missing out on advertisment',
+                  annual: -(coffeePrice / 40),
+                  disbandable: true,
+                  disbanddescription: `have to pay <span class="red">$${
+                    coffeePrice / 2
+                  }</span>.`,
+                  onDisband() {
+                    stats.money = stats.money - coffeePrice / 2;
+                  },
+                },
+              };
+            },
+          },
+        ],
+      },
+      company,
     ];
   },
 });

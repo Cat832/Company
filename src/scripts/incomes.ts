@@ -36,7 +36,7 @@ export function updateIncometable(
     qr += `<tr class="income-table-row ${
       v.disbandable ? 'pointer' : 'non-disbandable'
     }" id="itr-${v.name.replace(' ', '_')}">
-        <td class="income-table-cell">${v.name}${!v.disbandable ? '🔒':''}</td>
+        <td colspan="2" class="income-table-cell">${v.name}${!v.disbandable ? '🔒':''}</td>
         <td class="income-table-cell ${v.annual > 0 ? 'profit' : 'noprofit'}">${
       v.annual < 0 ? '-' : ''
     }$${Math.abs(v.annual)}</td>

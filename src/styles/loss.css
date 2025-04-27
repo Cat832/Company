@@ -1,0 +1,86 @@
+@font-face {
+  font-family: 'def';
+  src: url('../Fredoka/static/Fredoka-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'bold';
+  src: url('../Fredoka/static/Fredoka-Bold.ttf');
+}
+
+@keyframes FadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30em);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5; /* Light background */
+  font-family: 'def', sans-serif;
+}
+
+.loss-main-screen {
+  animation: FadeIn 0.8s forwards ease-out;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Perfect center */
+  text-align: center;
+  background: white;
+  padding: 3em 2em;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.loss-title h1 {
+  font-family: 'bold', sans-serif;
+  font-size: 4em;
+  margin: 0 0 0.5em 0;
+  color: #333;
+}
+
+span.loss-info {
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 2em;
+  color: #666;
+}
+
+.loss-btn-wrapper {
+  width: 100%;
+}
+
+button.loss-play-again {
+  background-color: rgb(68, 207, 68);
+  border: none;
+  font-size: 1.3em;
+  font-family: 'def';
+  color: white;
+  padding: 0.5em 2em;
+  height: auto;
+  border-radius: 100px;
+  cursor: pointer;
+  box-shadow: 0px 5px 0px rgb(46, 135, 46);
+  transition: all 0.25s ease;
+  animation-delay: 0.8s;
+}
+
+button.loss-play-again:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 7px 0px rgb(46, 135, 46);
+}
+
+button.loss-play-again:active {
+  transform: translateY(4px);
+  transition: none;
+  box-shadow: none;
+}

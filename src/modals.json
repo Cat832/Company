@@ -1,7 +1,7 @@
 {
   "infobtn": {
     "title": "Properties",
-    "description": "Properties are like stock markets. Unpredicitable, but they gain (and lose) value over time. This means if you wait long enough, you can sell your property and profit from it. However, you can't sell your property when it's damaged.",
+    "description": "Properties can be bought through various quest. Each year, every property's value changes. It can go up, but also down. This means if you wait long enough you can sell your property and profit. (Note that starting value ≠ property price)<br>Properties can get damaged through various ways (this is indicated by the property turning red). When that happens, you need to pay a price to repair them. You can wait as long as you want, but do note that a property's value can't increase when damaged and you can't sell a property when it's damaged.",
     "options": {
       "footer": {
         "hideCancel": true,

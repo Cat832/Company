@@ -27,6 +27,16 @@ const startingMoney = 10000;
 const moneyInt = getElement<HTMLSpanElement>('money-int');
 const progressBar = document.getElementById('progress-bar') as HTMLElement;
 const progressInt = document.getElementById('progress-int') as HTMLSpanElement;
+const incomeList = document.querySelector('.income-list') as HTMLDivElement;
+const incomeTable = getElement<HTMLTableSectionElement>('income-table');
+function updateIncomelist() {
+  console.log(incomeList.firstChild);
+  const count = incomeTable.children.length;
+  incomeList.style.setProperty('--children-count', count.toString());
+}
+function losePlayer() {
+  window.location.replace('/loss-screen.html');
+}
 function updateProgress(percent: number) {
   if (percent > 100) percent = 100;
   if (percent < 0) percent = 0;
@@ -90,6 +100,7 @@ export abstract class stats {
       this._incomes = nl;
       this.updateIncomes();
     });
+    updateIncomelist();
   }
   public static updateProperties() {
     updatePropertiesTable(
@@ -264,6 +275,9 @@ export abstract class stats {
 
     this.updateProperties();
     this.updateIncomes();
+    if (this.money <= 0 || this._reputation <= 0) {
+      losePlayer();
+    }
     this.simulateRandomEvent();
     this.yearNumber++;
   }
@@ -297,6 +311,7 @@ import {
   generateLargeMoney,
 } from '../Events/eventBuilder';
 import {
+  Advertisment,
   Dropshipping,
   Hotdogshop,
   PropertyFire,
@@ -312,6 +327,7 @@ const possibleEvents: Eventbuilder[] = [
   Hotdogshop,
   Dropshipping,
   TooMuchProducts,  
+  Advertisment
 ];
 
 stats.simulateRandomEvent();

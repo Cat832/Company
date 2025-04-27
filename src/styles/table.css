@@ -66,15 +66,20 @@
 }
 
 .income-list {
-  max-height: 10em !important;
-  overflow: auto !important;
+  --children-count: 2;
+  min-height: 78.86px;
+  max-height: calc((var(--children-count) * 39.43px) + 2px);
+  overflow: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   margin: 20px 0;
   border-radius: 12px;
+  resize: vertical;
 }
 
 .income-table {
+  height: 100%;
   width: 100%;
+  table-layout: fixed; /* optional, makes width behave better */
   border-collapse: collapse;
   font-family: 'Def';
   border-radius: 12px;
@@ -116,7 +121,7 @@
   width: 100%;
   border-collapse: collapse;
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
