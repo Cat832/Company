@@ -8,6 +8,9 @@ export type Property = {
   onDamagePrice: number;
   onSell?(): void;
   damaged?: boolean;
+  prependInModal?: string;
+  immune?: boolean;
+  growVals?: [number, number];
 };
 
 export type Income = {

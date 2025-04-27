@@ -1,4 +1,4 @@
-import { Income } from '../types/main';
+import { Income, Property } from '../types/main';
 import { modal } from './main';
 import { getElement } from './modal';
 
@@ -79,7 +79,11 @@ export function growRandom(num: number): number {
   return parseFloat((num * (1 + (Math.random() * 20 - 10) / 100)).toFixed(0));
 }
 
-export function isOriginalInList(x: Income, list: Income[]): boolean {
+export function riseRandom(num: number, min: number, max: number): number {
+  return parseFloat((num * (1 + (Math.random() * (max - min) + min) / 100)).toFixed(0));
+}
+
+export function isOriginalInList<T extends Income | Property>(x: T, list: T[]): boolean {
   for (const element of list) {
     if (element.name == x.name) {
       return true;

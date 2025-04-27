@@ -1,7 +1,7 @@
 {
   "infobtn": {
     "title": "Properties",
-    "description": "Owned properties increase by value over time, until you can sell them. However, they still need to be maintained and can be broken at any time. Put time and love into them, and you will profit!",
+    "description": "Properties are like stock markets. Unpredicitable, but they gain (and lose) value over time. This means if you wait long enough, you can sell your property and profit from it. However, you can't sell your property when it's damaged.",
     "options": {
       "footer": {
         "hideCancel": true,

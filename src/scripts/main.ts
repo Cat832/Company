@@ -3,6 +3,7 @@ import {
   deleteWithName,
   growRandom,
   updateIncometable,
+  riseRandom,
 } from './incomes';
 import { Chart, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
@@ -17,6 +18,7 @@ import { companiesTS, formatNumberWithPeriods } from '../Events/grc';
 import desicionManager from './desicionmanager';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 let hasWarnedAboutRogue = false;
+let hasWarnedAboutDamagedProperties = false;
 type ModalDataType = { [key: string]: ModalConfig };
 const modalDB = rawModalData as ModalDataType;
 Chart.register(...registerables, zoomPlugin);
@@ -32,6 +34,9 @@ function updateProgress(percent: number) {
 }
 function getLast<T>(array: T[]) {
   return array[array.length - 1];
+}
+function pickRandom<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
 }
 let CompanyChart = buildChart({
   context: document.getElementById('chart') as HTMLCanvasElement,
@@ -53,18 +58,10 @@ function simulateEvent(event: Eventbuilder) {
   desicionManager.fillAll(interaction);
 }
 export abstract class stats {
+  public static propertyBreakchance: 20;
   public static currentTier: number = 1;
   public static yearNumber: number = 0;
-  public static properties: Property[] = [
-    {
-      name: 'warehouse',
-      icon: 'warehouse',
-      value: 5000,
-      startedAt: 5000,
-      onDamagePrice: 13000,
-      damaged: true,
-    },
-  ];
+  public static properties: Property[] = [];
   private static _reputation: number = 50;
   private static _economy: number[] = [startingMoney];
   private static _incomes: Income[] = [
@@ -94,13 +91,19 @@ export abstract class stats {
     });
   }
   public static updateProperties() {
-    updateProperties(this.properties, function({deleteAtIndex, moneyGain}) {
-      stats.money = stats.money + moneyGain;
-      if (deleteAtIndex !== undefined) {
-        stats.properties.splice(deleteAtIndex, 1);
+    updatePropertiesTable(
+      stats.properties,
+      function ({ interactionAtIndex, moneyGain }) {
+        stats.money = stats.money + moneyGain;
+        spawnCash(moneyInt, moneyGain);
+        if (moneyGain < 0) {
+          stats.properties[interactionAtIndex].damaged = false;
+        } else {
+          stats.properties.splice(interactionAtIndex, 1);
+        }
         stats.updateProperties();
       }
-    });
+    );
   }
   public static set reputation(to: number) {
     this._reputation = to;
@@ -146,6 +149,10 @@ export abstract class stats {
     this._incomes.push(a);
     this.updateIncomes();
   }
+  public static addProperty(a: Property) {
+    this.properties.push(a);
+    this.updateProperties();
+  }
   public static addMoney(num: number) {
     this.salery += num;
   }
@@ -171,6 +178,19 @@ export abstract class stats {
       }
     }
 
+    (
+      document.querySelectorAll('.property') as NodeListOf<HTMLDivElement>
+    ).forEach((element, i) => {
+      console.log('property found');
+      let property = this.properties[i];
+      if (property.damaged) return;
+      let growValues = property.growVals || [-10, 20];
+      let newValue = riseRandom(property.value, growValues[0], growValues[1]);
+      spawnCash(element, newValue - property.value);
+      property.value = newValue;
+    });
+
+    //For incomes
     if (chance(10)) {
       //Find random earnings to go rogue (so that you have to disband 😞)
       let randomPositiveIncome: Income;
@@ -208,6 +228,31 @@ export abstract class stats {
       }
     }
 
+    //For properties
+    let options = this.properties.filter((v) => !(v.damaged || v.immune));
+    if (options.length > 0 && chance(this.propertyBreakchance)) {
+      let randomProperty: Property;
+      randomProperty = pickRandom(options);
+
+      if (!hasWarnedAboutDamagedProperties) {
+        modal.changeModal({
+          title: 'Warning!',
+          description: `Properties can sometimes break. In this case, your ${randomProperty.name} is damaged, meaning it can't increase in value no more until you repair it at a price of <span class="red">$${randomProperty.onDamagePrice}</span>. Make sure to maintain your properties, becuase this is the last time you will be warned.`,
+          options: {
+            footer: {
+              hideCancel: true,
+              confirmText: 'I understand',
+            },
+          },
+        });
+        modal.show();
+        hasWarnedAboutDamagedProperties = true;
+      }
+
+      randomProperty.damaged = true;
+    }
+
+    this.updateProperties();
     this.updateIncomes();
     this.simulateRandomEvent();
     this.yearNumber++;
@@ -223,11 +268,13 @@ document.addEventListener('keydown', (e) => {
     modal.close();
   }
 });
+stats.updateProperties();
 
 desicionManager.listenFor = (a) => {
   stats.reputation = stats.reputation + (a.reputationGain || 0);
   stats.addMoney(a.moneyGain || 0);
   stats.simulateYear();
+  if (a.propertyGain) stats.addProperty(a.propertyGain);
   if (a.incomeGain) stats.addIncome(a.incomeGain);
 };
 
@@ -237,37 +284,38 @@ import {
   Eventbuilder,
   generateLargeMoney,
 } from '../Events/eventBuilder';
-import { StarterEvent } from '../Events/events';
-import { updateProperties } from './properties';
+import { Stockmarket } from '../Events/events';
+import { updateProperties as updatePropertiesTable } from './properties';
+import { spawnCash } from './spawnCashsign';
 
-const possibleEvents: Eventbuilder[] = [StarterEvent];
+const possibleEvents: Eventbuilder[] = [Stockmarket];
 
 stats.simulateRandomEvent();
 
 function updateLinks() {
-  (
-    document.querySelectorAll('.modal-link') as NodeListOf<HTMLSpanElement>
-  ).forEach((element) => {
-    console.log(element);
-    let modalId = element.ariaDescription as string;
-    console.log(modalId);
-    if (modalId == 'decorative') return;
-    if (modalId.startsWith('ts')) {
-      let config = companiesTS[modalId];
-      if (config) {
-        element.addEventListener('click', () => {
-          modal.changeModal(config.modal);
-          modal.show();
-        });
-      }
-    } else {
-      let config = modalDB[modalId];
-      if (config) {
-        element.addEventListener('click', () => {
-          modal.changeModal(config);
-          modal.show();
-        });
+  (document.querySelectorAll('.modal-link') as NodeListOf<HTMLElement>).forEach(
+    (element) => {
+      console.log(element);
+      let modalId = element.ariaDescription as string;
+      console.log(modalId);
+      if (modalId == 'decorative') return;
+      if (modalId.startsWith('ts')) {
+        let config = companiesTS[modalId];
+        if (config) {
+          element.addEventListener('click', () => {
+            modal.changeModal(config.modal);
+            modal.show();
+          });
+        }
+      } else {
+        let config = modalDB[modalId];
+        if (config) {
+          element.addEventListener('click', () => {
+            modal.changeModal(config);
+            modal.show();
+          });
+        }
       }
     }
-  });
+  );
 }

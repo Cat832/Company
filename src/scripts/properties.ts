@@ -3,7 +3,7 @@ import { modal } from './main';
 import { getElement } from './modal';
 
 export type PropertiesChange = {
-  deleteAtIndex: number | undefined;
+  interactionAtIndex: number;
   moneyGain: number;
 };
 
@@ -12,7 +12,10 @@ export function updateProperties(
   onChange: (data: PropertiesChange) => void
 ) {
   const element = getElement<HTMLDivElement>('properties-box');
-  element.innerHTML = a.length > 0 ? '' : '<span class="NA-properties">You have no properties</span>';
+  element.innerHTML =
+    a.length > 0
+      ? ''
+      : '<span class="NA-properties">You have no properties</span>';
   a.forEach((v, i) => {
     let propertyElement = document.createElement('div');
     propertyElement.classList = `property${v.damaged ? ' damaged' : ''}`;
@@ -42,7 +45,7 @@ export function updateProperties(
       </table>`;
     propertyElement.onclick = () => {
       modal.changeModal({
-        title: `${v.damaged ? 'Repair' : 'Sell'} ${v.name}?`,
+        title: `${v.damaged ? 'Repair' : v.prependInModal || 'Sell'} ${v.name}?`,
         description: `${
           v.damaged
             ? 'You cannot sell this property due to it being damaged.'
@@ -51,7 +54,7 @@ export function updateProperties(
         onConfirm() {
           onChange({
             moneyGain: v.damaged ? -v.onDamagePrice : v.value,
-            deleteAtIndex: v.damaged ? undefined : i,
+            interactionAtIndex: i,
           });
         },
       });

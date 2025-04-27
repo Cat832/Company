@@ -1,6 +1,7 @@
 @import url('./modal.css');
 @import url('./closebtn.css');
 @import url('./properties.css');
+@import url('./cash.css');
 
 
 :root {
@@ -277,3 +278,20 @@ hr {
   margin-block: 1em;
 }
 
+.settings {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  font-size: 1.3em;
+  padding: 6px;
+  min-width: 6em;
+  border-radius: 0.3em;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+#setting-option-cashfloat {
+  cursor: pointer;
+  transform: scale(1.3);
+}
