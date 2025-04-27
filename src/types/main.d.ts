@@ -1,5 +1,15 @@
 export type Tool = 'Media team';
 
+export type Property = {
+  name: string;
+  icon: string;
+  startedAt: number;
+  value: number;
+  onDamagePrice: number;
+  onSell?(): void;
+  damaged?: boolean;
+};
+
 export type Income = {
   name: string;
   annual: number;
@@ -17,9 +27,10 @@ export type Income = {
 
 export type ButtonResult = {
   moneyGain?: number;
+  propertyGain?: Property;
   incomeGain?: Income;
   reputationGain?: number;
-  toolGain?: Tool;
+  // toolGain?: Tool;
 };
 
 export type Company = {

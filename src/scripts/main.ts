@@ -15,6 +15,7 @@ import Modal, { getElement, ModalConfig } from './modal';
 import rawModalData from '../modals.json';
 import { companiesTS, formatNumberWithPeriods } from '../Events/grc';
 import desicionManager from './desicionmanager';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 let hasWarnedAboutRogue = false;
 type ModalDataType = { [key: string]: ModalConfig };
 const modalDB = rawModalData as ModalDataType;
@@ -54,6 +55,16 @@ function simulateEvent(event: Eventbuilder) {
 export abstract class stats {
   public static currentTier: number = 1;
   public static yearNumber: number = 0;
+  public static properties: Property[] = [
+    {
+      name: 'warehouse',
+      icon: 'warehouse',
+      value: 5000,
+      startedAt: 5000,
+      onDamagePrice: 13000,
+      damaged: true,
+    },
+  ];
   private static _reputation: number = 50;
   private static _economy: number[] = [startingMoney];
   private static _incomes: Income[] = [
@@ -66,9 +77,9 @@ export abstract class stats {
     { name: 'Default expenses', annual: -400 },
   ];
   public get totalProfit() {
-    let qr = 0
+    let qr = 0;
     for (const income of stats._incomes) {
-      qr+=income.annual;
+      qr += income.annual;
     }
     return qr;
   }
@@ -82,12 +93,25 @@ export abstract class stats {
       this.updateIncomes();
     });
   }
+  public static updateProperties() {
+    updateProperties(this.properties, function({deleteAtIndex, moneyGain}) {
+      stats.money = stats.money + moneyGain;
+      if (deleteAtIndex !== undefined) {
+        stats.properties.splice(deleteAtIndex, 1);
+        stats.updateProperties();
+      }
+    });
+  }
   public static set reputation(to: number) {
     this._reputation = to;
     updateProgress(this._reputation);
   }
-  public static get economy(): number[] { return this._economy; }
-  public static get money() { return getLast<number>(this._economy); }
+  public static get economy(): number[] {
+    return this._economy;
+  }
+  public static get money() {
+    return getLast<number>(this._economy);
+  }
   public static set money(to: number) {
     this._economy.push(to);
     let dataset = CompanyChart.data.datasets[0];
@@ -127,7 +151,7 @@ export abstract class stats {
   }
   public static simulateYear() {
     //Cash in
-    let incomeSalery = 0
+    let incomeSalery = 0;
     for (const income of this._incomes) {
       if ((income.disbandYearnumber || Infinity) <= this.yearNumber) {
         this._incomes = deleteWithName(income.name, this._incomes);
@@ -135,7 +159,7 @@ export abstract class stats {
         incomeSalery += income.annual;
       }
     }
-    this.salery += incomeSalery
+    this.salery += incomeSalery;
     let currentMoney = this.money;
     this.money = (currentMoney || 0) + this.salery;
     this.salery = 0;
@@ -183,7 +207,7 @@ export abstract class stats {
         randomPositiveIncome.annual = newAnnual;
       }
     }
-    
+
     this.updateIncomes();
     this.simulateRandomEvent();
     this.yearNumber++;
@@ -199,6 +223,7 @@ document.addEventListener('keydown', (e) => {
     modal.close();
   }
 });
+
 desicionManager.listenFor = (a) => {
   stats.reputation = stats.reputation + (a.reputationGain || 0);
   stats.addMoney(a.moneyGain || 0);
@@ -206,16 +231,16 @@ desicionManager.listenFor = (a) => {
   if (a.incomeGain) stats.addIncome(a.incomeGain);
 };
 
-import { Income } from '../types/main';
+import { Income, Property } from '../types/main';
 import {
   chance,
   Eventbuilder,
   generateLargeMoney,
 } from '../Events/eventBuilder';
+import { StarterEvent } from '../Events/events';
+import { updateProperties } from './properties';
 
-const possibleEvents: Eventbuilder[] = [
-  
-];
+const possibleEvents: Eventbuilder[] = [StarterEvent];
 
 stats.simulateRandomEvent();
 
@@ -223,9 +248,9 @@ function updateLinks() {
   (
     document.querySelectorAll('.modal-link') as NodeListOf<HTMLSpanElement>
   ).forEach((element) => {
-    console.log(element)
+    console.log(element);
     let modalId = element.ariaDescription as string;
-    console.log(modalId)
+    console.log(modalId);
     if (modalId == 'decorative') return;
     if (modalId.startsWith('ts')) {
       let config = companiesTS[modalId];

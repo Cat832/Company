@@ -1,16 +1,12 @@
 {
-    "1": {
-        "title": "Company",
-        "description": "The company is named \"Scrubdaddy\" with an annual income of ~$600000.",
-        "options": {
-            "footer": {
-                "hideConfirm": true,
-                "hideCancel": true
-            }
-        }
-    },
-    "2": {
-        "title": "Company",
-        "description": "The company is named \"Heiniken\" with an annual income of ~-$7000"
+  "infobtn": {
+    "title": "Properties",
+    "description": "Owned properties increase by value over time, until you can sell them. However, they still need to be maintained and can be broken at any time. Put time and love into them, and you will profit!",
+    "options": {
+      "footer": {
+        "hideCancel": true,
+        "confirmText": "okay"
+      }
     }
+  }
 }

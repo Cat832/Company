@@ -1,5 +1,6 @@
 @import url('./modal.css');
 @import url('./closebtn.css');
+@import url('./properties.css');
 
 
 :root {
@@ -44,6 +45,7 @@
 }
 .green {
   color: green;
+  font-family: 'Def' !important;
 }
 
 @font-face {

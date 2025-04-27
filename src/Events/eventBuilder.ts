@@ -19,7 +19,7 @@ export function generateLargeMoney(
 }
 
 export type eventConfig = {
-  generate(id: string, tier: Tier): [Interaction, Company | undefined];
+  generate(id: string): [Interaction, Company | undefined];
   tier: Tier;
   oneTime?: boolean;
 };
@@ -27,7 +27,7 @@ export type eventConfig = {
 export class Eventbuilder {
   tier: Tier;
   oneTime: boolean;
-  generate: (id: string, tier: Tier) => [Interaction, Company | undefined];
+  generate: (id: string) => [Interaction, Company | undefined];
   constructor({ generate, tier, oneTime }: eventConfig) {
     this.oneTime = oneTime == undefined ? false : oneTime;
     this.tier = tier;
@@ -35,7 +35,7 @@ export class Eventbuilder {
   }
 
   build(): Interaction {
-    let result = this.generate(`ts${registeredCompanies + 1}`, this.tier);
+    let result = this.generate(`ts${registeredCompanies + 1}`);
     if (typeof result[1] !== 'undefined') {
       registerCompany(result[1], {
         title: 'Company info',
