@@ -2,9 +2,10 @@
 // import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
 // import { buildCompany, Tier } from './grc';
 
-import { pickRandom, stats } from '../scripts/main';
+import { modal, pickRandom, stats } from '../scripts/main';
 import { Company } from '../types/main';
-import { Eventbuilder, generateLargeMoney } from './eventBuilder';
+import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
+import { getRandomProduct } from './grc';
 
 export const Stockmarket = new Eventbuilder({
   tier: 1,
@@ -12,7 +13,7 @@ export const Stockmarket = new Eventbuilder({
     let money = generateLargeMoney(0, 4, 1000);
     return [
       {
-        title: `📈 Do you want to invest <g>$${money}</g> in the stockmarket?`,
+        title: `📈 An expert trader says he can help you make money. All he needs is <g>$${money}</g> from you to invest the stockmarket. Do you comply? `,
         buttons: [
           {
             text: 'accept',
@@ -22,6 +23,7 @@ export const Stockmarket = new Eventbuilder({
                 propertyGain: {
                   name: 'stockmarket investment',
                   icon: 'money-bill-trend-up',
+                  sector: 'service',
                   onDamagePrice: 0,
                   startedAt: money,
                   value: money,
@@ -65,7 +67,7 @@ export const PropertyFire = new Eventbuilder({
           {
             text: 'Fix it yourself',
             variant: 'succes',
-            description: `Leave your ${random.name} in a damaged state, which will cost <r>$${random.onDamagePrice}</r>.`,
+            description: `Leave your ${random.name} in a damaged state, which will cost <r>$${random.onDamagePrice}</r> to repair.`,
             onClick() {
               random.damaged = true;
               return {};
@@ -106,12 +108,12 @@ export const Hotdogshop = new Eventbuilder({
             variant: 'succes',
             description: `Buy <span class="blue modal-link" aria-description="${id}">“${stand.name}”</span> for <g>$${price}</g>.`,
             onClick() {
-
               return {
                 propertyGain: {
                   name: 'hotdog stand',
                   icon: 'hotdog',
                   onDamagePrice: stand.income / 5,
+                  sector: 'economy',
                   startedAt: price,
                   value: price,
                   growVals: [-3, 3],
@@ -138,6 +140,155 @@ export const Hotdogshop = new Eventbuilder({
         ],
       },
       stand,
+    ];
+  },
+});
+
+export const Dropshipping = new Eventbuilder({
+  tier: 1,
+  oneTime: false,
+  generate(_id) {
+    let product1 = getRandomProduct();
+    let product2 = getRandomProduct();
+
+    let dropshippingGoesbad = chance(30);
+    let moneyGain = dropshippingGoesbad
+      ? generateLargeMoney(0, 8, -100)
+      : generateLargeMoney(0, 8, 100);
+
+    const popupMsg = () => {
+      modal.changeModal({
+        title: 'Dropshipping failed...',
+        description: `You will now have to pay <r>$${Math.abs(
+          moneyGain
+        )}</r> annualy for 3 years to clean up this mess. `,
+        options: {
+          footer: {
+            hideConfirm: true,
+            cancelText: 'okay',
+          },
+        },
+      });
+      modal.show();
+    };
+
+    return [
+      {
+        title: `📦 You start dropshipping, and have to choose between <span class="blue">“${product1}”</g> and <span class="blue">“${product2}”</r>, or do you choose to not risk it and find safer ways to make money.`,
+        buttons: [
+          {
+            variant: 'succes',
+            text: product1,
+            description: `Start dropshipping “${product1}”.`,
+            onClick() {
+              if (dropshippingGoesbad) {
+                popupMsg();
+              }
+              return dropshippingGoesbad
+                ? {
+                    incomeGain: {
+                      name: `Recovering “${product1}”`,
+                      annual: moneyGain,
+                      disbandable: false,
+                      disbandYearnumber: stats.yearNumber + 3,
+                    },
+                  }
+                : {
+                    incomeGain: {
+                      name: `Dropshipping “${product1}”`,
+                      annual: moneyGain,
+                      disbandable: true,
+                    },
+                  };
+            },
+          },
+          {
+            variant: 'succes',
+            text: product2,
+            description: `Start dropshipping “${product2}”.`,
+            onClick() {
+              if (dropshippingGoesbad) {
+                popupMsg();
+              }
+              return dropshippingGoesbad
+                ? {
+                    incomeGain: {
+                      name: `Recovering “${product2}”`,
+                      annual: moneyGain,
+                      disbandable: false,
+                      disbandYearnumber: stats.yearNumber + 3,
+                    },
+                  }
+                : {
+                    incomeGain: {
+                      name: `Dropshipping “${product2}”`,
+                      annual: moneyGain,
+                      disbandable: true,
+                    },
+                  };
+            },
+          },
+          {
+            text: "don't risk it",
+            variant: 'error',
+            description: "Don't start dropshipping any product.",
+            onClick() {
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const TooMuchProducts = new Eventbuilder({
+  tier: 1,
+  generate(_id) {
+    let productPrice = generateLargeMoney(40, 90, 30);
+    return [
+      {
+        title: `💸 You have too much products (worth <g>$${
+          productPrice / 4
+        }</g>) and no place to store them. Do you buy an expansive warehouse with the chance of getting more value from them, or do you sell them now?`,
+        buttons: [
+          {
+            text: 'buy warehouse',
+            description: `Buy a warehouse for <r>$${
+              productPrice * 2
+            }</r> to store them.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                propertyGain: {
+                  name: 'warehouse',
+                  icon: 'warehouse',
+                  onDamagePrice: productPrice / 15,
+                  startedAt: productPrice / 4,
+                  value: productPrice / 4,
+                  growVals: [-2, 6],
+                  sector: 'industry',
+                  hideNameInModal: true,
+                  prependInModal: 'Sell products',
+                },
+                moneyGain: -(productPrice / 4),
+              };
+            },
+          },
+          {
+            text: 'sell now',
+            variant: 'error',
+            description: `Sell the products now for <g>$${productPrice / 4}</g>`,
+            onClick() {
+              return {
+                moneyGain: productPrice / 4
+              }
+            },
+          },
+        ],
+      },
+      undefined,
     ];
   },
 });

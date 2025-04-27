@@ -1,10 +1,20 @@
 export type Tool = 'Media team';
 
+export type PropertySector =
+  | 'production'
+  | 'industry'
+  | 'economy'
+  | 'service'
+
+
 export type Property = {
   /**Name of property.*/
   name: string;
   /**Fill in blank: `<i class="fas fa-`___`"`></i>`*/
   icon: string;
+
+  /**Sector property falls in, for events to deal with.*/
+  sector: PropertySector;
 
   /**The first value of property.*/
   startedAt: number;

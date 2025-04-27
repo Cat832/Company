@@ -1,6 +1,9 @@
+import { pickRandom } from '../scripts/main';
 import { ModalConfig } from '../scripts/modal';
 import { Company } from '../types/main';
 import companiesRawData from './companies.json';
+import productsRawData from './products.json';
+let products = [...(productsRawData as string[])];
 let companies = [...(companiesRawData as string[])];
 
 export function grc(): string {
@@ -9,7 +12,7 @@ export function grc(): string {
   let element = companies[index];
   companies.splice(index, 1);
   if (element == undefined) {
-    console.log(companies, index)
+    console.log(companies, index);
   }
   return element;
 }
@@ -136,4 +139,8 @@ export function registerCompany(a: Company, b: ModalConfig) {
     modal: b,
   };
   registeredCompanies++;
+}
+
+export function getRandomProduct(): string {
+  return pickRandom(products);
 }

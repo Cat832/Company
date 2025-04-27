@@ -7,6 +7,7 @@ import {
 } from './incomes';
 import { Chart, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import '../styles/style.css';
 import '../styles/colorpicker.css';
 import '../styles/table.css';
@@ -21,8 +22,8 @@ let hasWarnedAboutRogue = false;
 let hasWarnedAboutDamagedProperties = false;
 type ModalDataType = { [key: string]: ModalConfig };
 const modalDB = rawModalData as ModalDataType;
-Chart.register(...registerables, zoomPlugin);
-const startingMoney = 25000;
+Chart.register(...registerables, zoomPlugin, annotationPlugin);
+const startingMoney = 10000;
 const moneyInt = getElement<HTMLSpanElement>('money-int');
 const progressBar = document.getElementById('progress-bar') as HTMLElement;
 const progressInt = document.getElementById('progress-int') as HTMLSpanElement;
@@ -124,7 +125,7 @@ export abstract class stats {
       CompanyChart.update();
     }
     moneyInt.innerHTML = `Current money: $${formatNumberWithPeriods(
-      this._economy[this._economy.length - 1]
+      parseInt((this._economy[this._economy.length - 1]).toFixed(0))
     )}`;
   }
   public static simulateRandomEvent() {
@@ -295,7 +296,13 @@ import {
   Eventbuilder,
   generateLargeMoney,
 } from '../Events/eventBuilder';
-import { Hotdogshop, PropertyFire, Stockmarket } from '../Events/events';
+import {
+  Dropshipping,
+  Hotdogshop,
+  PropertyFire,
+  Stockmarket,
+  TooMuchProducts,
+} from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
 
@@ -303,6 +310,8 @@ const possibleEvents: Eventbuilder[] = [
   Stockmarket,
   PropertyFire,
   Hotdogshop,
+  Dropshipping,
+  TooMuchProducts,  
 ];
 
 stats.simulateRandomEvent();
