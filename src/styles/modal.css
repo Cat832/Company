@@ -86,3 +86,68 @@
   filter: brightness(1) !important;
   transition: none;
 }
+
+@keyframes FadeIn {
+  0% {
+    top: -40%;
+    opacity: 0;
+  }
+
+  100% {
+    top: 10%;
+    opacity: 1;
+  }
+}
+
+.tier-upgrade-msg {
+  position: absolute;
+  left: calc(35% - 2em);
+  top: -40%;
+  opacity: 0;
+  display: none;
+  background-color: white;
+  padding: 2em;
+  border-radius: 1em;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.4);
+  width: 30%;
+  transition: 0.3s ease-in-out !important;
+}
+
+.tier-upgrade-msg.show {
+  animation: FadeIn 0.3s ease-in-out forwards;
+  display: block;
+}
+
+.tier-upgrade-msg-title {
+  margin-block-end: 1em;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+#upgrade-txt {
+  font-family: 'Bold';
+  display: inline;
+}
+
+#upgrade-desc {
+  font-family: 'def';
+}
+
+.tier-upgrade-msg-description {
+  margin-bottom: 3em;
+  text-align: center;
+}
+
+.tier-upgrade-btn-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.tier-upgrade-btn-wrapper>.desicion-options {
+  width: 60% !important;
+}
+
+#tier-btn {
+  font-size: 1.3em;
+  border-radius: 1em !important;
+}

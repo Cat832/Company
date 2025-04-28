@@ -1,5 +1,4 @@
 import {
-  isOriginalInList,
   deleteWithName,
   growRandom,
   updateIncometable,
@@ -18,6 +17,17 @@ import rawModalData from '../modals.json';
 import { companiesTS, formatNumberWithPeriods } from '../Events/grc';
 import desicionManager from './desicionmanager';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+export let disabled = false;
+function disableBody() {
+  let body = document.querySelector('.everything-wrapper') as HTMLDivElement;
+  body.classList.add('disabled');
+  disabled = true;
+}
+function enableBody() {
+  let body = document.querySelector('.everything-wrapper') as HTMLDivElement;
+  body.classList.remove('disabled');
+  disabled = false;
+}
 let hasWarnedAboutRogue = false;
 let hasWarnedAboutDamagedProperties = false;
 type ModalDataType = { [key: string]: ModalConfig };
@@ -68,6 +78,17 @@ function simulateEvent(event: Eventbuilder) {
   let interaction = event.build();
   desicionManager.fillAll(interaction);
 }
+
+getElement<HTMLButtonElement>('tier-btn').onclick = () => {
+  (
+    document.querySelector('.tier-upgrade-msg') as HTMLDivElement
+  ).classList.remove('show');
+  enableBody();
+};
+const tierDescriptions: Record<number, string> = {
+  2: 'After reaching <span class="green">$20000</span> you need to get ahead of yourself, hire more people and buy more properties. More companies are going to try and bring you down!',
+};
+
 export abstract class stats {
   public static propertyBreakchance: 20;
   public static currentTier: number = 1;
@@ -76,6 +97,26 @@ export abstract class stats {
   private static _transmissions: any[] = [];
   private static _reputation: number = 50;
   private static _economy: number[] = [startingMoney];
+  public static upgradeTier() {
+    let tierUpgraded = false;
+    if (this.money >= 20000) {
+      this.currentTier = 2;
+      tierUpgraded = true;
+    }
+
+    if (tierUpgraded) {
+      disableBody();
+      let popupMsg = document.querySelector(
+        '.tier-upgrade-msg'
+      ) as HTMLDivElement;
+      popupMsg.classList.add('show');
+      getElement<HTMLHeadingElement>(
+        'upgrade-txt'
+      ).innerHTML = `Upgraded to tier ${this.currentTier}!`;
+      getElement<HTMLSpanElement>('upgrade-desc').innerHTML =
+        tierDescriptions[this.currentTier];
+    }
+  }
   public static incomes: Income[] = [
     {
       name: 'Default earnings',
@@ -144,6 +185,9 @@ export abstract class stats {
       CompanyChart.data.labels = Array.from(dataset.data, () => '');
       CompanyChart.update();
     }
+    if (this.money >= 20000) {
+      this.currentTier = 2;
+    }
     moneyInt.innerHTML = `Current money: $${formatNumberWithPeriods(
       parseInt(this._economy[this._economy.length - 1].toFixed(0))
     )}`;
@@ -153,7 +197,7 @@ export abstract class stats {
     let index = Math.floor(Math.random() * possibleEvents.length);
     let element = possibleEvents[index];
     while (!validChoice) {
-      if (!element.shouldSkip() && element.tier !== 0) {
+      if (!element.shouldSkip() && element.tier == this.currentTier) {
         validChoice = true;
       } else {
         index = Math.floor(Math.random() * possibleEvents.length);
@@ -178,18 +222,12 @@ export abstract class stats {
     }
   }
   public static addIncome(a: Income) {
-    let isOriginal = false;
-    let instance = 0;
-    while (!isOriginal) {
-      let qorg = isOriginalInList(a, this.incomes);
-      if (qorg) {
-        instance++;
-        a.name = `${a.name.replace(`(${instance - 1})`, '')} (${instance})`;
-      } else {
-        break;
-      }
+    let nameSharers = this.incomes.filter((v) => v.name == a.name);
+    if (nameSharers.length == 0) {
+      this.incomes.push(a);
+    } else {
+      nameSharers[0].annual += a.annual;
     }
-    this.incomes.push(a);
     this.updateIncomes();
   }
   public static addProperty(a: Property) {
@@ -245,7 +283,8 @@ export abstract class stats {
       if (options.length > 0) {
         randomPositiveIncome =
           options[Math.floor(Math.random() * options.length)];
-        let newAnnual = 0 - generateLargeMoney(1, 600, 10);
+        let newAnnual =
+          0 - generateLargeMoney(200, randomPositiveIncome.annual, 1);
 
         if (!hasWarnedAboutRogue) {
           modal.changeModal({
@@ -344,22 +383,33 @@ import {
   Dropshipping,
   Hotdogshop,
   PropertyFire,
-  Stockmarket,
   TooMuchProducts,
   LawsuitPersonal,
   HarrasmentClaim,
+  AbondenedFactory,
+  EmployeeDeath,
+  Truck,
+  Humantrafficking,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
 
 const possibleEvents: Eventbuilder[] = [
-  Stockmarket,
+  //Tier 0
+  LawsuitPersonal,
+
+  //Tier 1
   PropertyFire,
-  Hotdogshop,
   Dropshipping,
+  Hotdogshop,
   TooMuchProducts,
   Advertisment,
-  LawsuitPersonal,
+  AbondenedFactory,
+  EmployeeDeath,
+  Truck,
+  Humantrafficking,
+
+  //Tier 2
   HarrasmentClaim,
 ];
 
@@ -376,6 +426,7 @@ function updateLinks() {
         let config = companiesTS[modalId];
         if (config) {
           element.addEventListener('click', () => {
+            if (disabled) return;
             modal.changeModal(config.modal);
             modal.show();
           });
@@ -384,6 +435,7 @@ function updateLinks() {
         let config = modalDB[modalId];
         if (config) {
           element.addEventListener('click', () => {
+            if (disabled) return;
             modal.changeModal(config);
             modal.show();
           });
@@ -392,3 +444,32 @@ function updateLinks() {
     }
   );
 }
+
+let admin = false;
+document.addEventListener('keydown', (e) => {
+  if (e.key == 'o') {
+    if (!admin && prompt('password?') !== 'ibseSo!1') return;
+    if (!admin) alert('logged in');
+    admin = true;
+    let command = prompt('Type command') || '';
+    switch (true) {
+      case command.startsWith('money'):
+        try {
+          let amount = parseInt(command.split(' ')[1]);
+          stats.money = stats.money + amount;
+        } catch {
+          alert('command did not work');
+        }
+        break;
+      case command.startsWith('upgrade'):
+        stats.upgradeTier();
+        break;
+      case command == 'force tier 2':
+        stats.money = stats.money + 20000;
+        stats.upgradeTier();
+        break;
+      default:
+        alert('Command not recognized');
+    }
+  }
+});

@@ -1,4 +1,5 @@
 import { ButtonResult, Interaction, InteractionButton } from '../types/main';
+import { disabled } from './main';
 import { getElement } from './modal';
 
 const desicionManager = {
@@ -62,7 +63,9 @@ const desicionManager = {
     x.forEach((btn) => {
       let button = this.buttonRow.buildBtn(btn);
       button.addEventListener('click', () => {
-        this.listenFor(btn.onClick());
+        if (!disabled) {
+          this.listenFor(btn.onClick());
+        }
       });
     });
   },

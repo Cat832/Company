@@ -45,7 +45,7 @@ export function updateProperties(
       </table>`;
     propertyElement.onclick = () => {
       modal.changeModal({
-        title: `${v.damaged ? 'Repair' : v.prependInModal || 'Sell '}${
+        title: `${v.damaged ? 'Repair' : v.prependInModal || 'Sell '}${v.hideNameInModal?'':' '}${
           v.hideNameInModal ? '' : v.name
         }?`,
         description: `${

@@ -7,7 +7,7 @@
     <title>Corperation</title>
   </head>
   <body>
-    <div class="gap-8 display-flex width-max">
+    <div class="gap-8 display-flex width-max everything-wrapper">
       <div class="interface">
         <div class="desicion">
           <div class="desicion-name">
@@ -112,6 +112,23 @@
     <div class="settings">
       <i class="fas fa-gear"></i>
       <input type="checkbox" checked="true" id="setting-option-cashfloat" title="Show cash popups">
+    </div>
+
+    <div class="tier-upgrade-msg">
+      <div class="tier-upgrade-msg-title">
+
+        <h1 id="upgrade-txt">Upgrade to tier 4!</h1>
+      </div>
+
+      <div class="tier-upgrade-msg-description">
+        <span id="upgrade-desc">Due to reaching $100000, you can now be called a serious company and you will be faceing more difficult challanges. Make difficult desicions: and just because you got this far, doesn't mean you can't lose...</span>
+      </div>
+
+      <div class="tier-upgrade-btn-wrapper">
+        <div class="desicion-options display-flex">
+          <button class="desicion-options-button succes" id="tier-btn">Continue game</button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="/src/scripts/main.ts"></script>

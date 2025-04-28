@@ -13,7 +13,7 @@ export default function buildChart({
   values,
   lineColor,
   defaultBorderWidth,
-  title = 'Boter Inc.',
+  title = 'Tier 1',
 }: config) {
   const qr = new Chart(context, {
     type: 'line',
@@ -23,7 +23,7 @@ export default function buildChart({
         {
           label: 'worth',
           data: values,
-          tension: 0,
+          tension: 0.1,
           fill: true,
           borderColor: lineColor,
           pointRadius: 0.2,

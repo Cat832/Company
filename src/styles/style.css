@@ -296,3 +296,8 @@ hr {
   cursor: pointer;
   transform: scale(1.3);
 }
+
+.disabled {
+  filter: blur(3px);
+  transition: 1s ease;
+}

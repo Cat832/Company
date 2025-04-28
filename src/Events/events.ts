@@ -1,45 +1,55 @@
 import { modal, pickRandom, stats } from '../scripts/main';
 import { Company } from '../types/main';
 import { chance, Eventbuilder, generateLargeMoney } from './eventBuilder';
-import { buildCompany, getRandomProduct, grp } from './grc';
+import { buildCompany, getRandomProduct, grc, grp } from './grc';
 
-export const Stockmarket = new Eventbuilder({
-  tier: 1,
-  id: 'stockmarket',
+//========================================TIER 0====================================================
+/**Parameters:
+ * @param firstWrite lawsuit value: number
+ * @param secondWrite person name: string
+ */
+export const LawsuitPersonal = new Eventbuilder({
+  id: 'lawsuitpersonal',
+  tier: 0,
   generate(_id) {
-    let money = generateLargeMoney(0, 4, 1000);
+    let person = stats.lastTransmission as string;
+    let amount = stats.getIndexedTransmission(1) as number;
     return [
       {
-        title: `📈 An expert trader says he can help you make money. All he needs is <g>$${money}</g> from you to invest the stockmarket. Do you comply? `,
+        title: `&#9878;&#65039; ${person} is sueing you! They want to settle for <r>$${amount}</r>.`,
         buttons: [
           {
-            text: 'accept',
+            text: 'settle',
+            description: `Pay <r>$${amount}</r> and just get this over with.`,
             variant: 'succes',
             onClick() {
-              return {
-                propertyGain: {
-                  name: 'stockmarket investment',
-                  icon: 'money-bill-trend-up',
-                  sector: 'service',
-                  onDamagePrice: 0,
-                  startedAt: money,
-                  value: money,
-                  prependInModal: 'Cash out ',
-                  immune: true,
-                  growVals: [-3, 3],
-                },
-                moneyGain: -money,
-              };
+              return { moneyGain: -amount };
             },
-            description: `Recieve a "stockmarket" property of value <span class="green">$${money}</span>.`,
           },
           {
-            text: 'decline',
+            text: 'fight',
+            description: `Fight a legal battle, and risk your reputation.`,
             variant: 'error',
             onClick() {
-              return {};
+              let caseWon = chance(50);
+              modal.changeModal({
+                title: `Case ${caseWon ? 'won' : 'lost'}`,
+                description: caseWon
+                  ? "You won the case, and didn't lose anything."
+                  : `Not only did you lose <span class="red">$${amount}</span>, you also lost 10% reputation.`,
+                options: {
+                  footer: {
+                    hideConfirm: true,
+                    cancelText: 'okay',
+                  },
+                },
+              });
+              modal.show();
+              return {
+                moneyGain: caseWon ? 0 : -amount,
+                reputationGain: caseWon ? 0 : -15,
+              };
             },
-            description: 'Skip the offer.',
           },
         ],
       },
@@ -48,6 +58,7 @@ export const Stockmarket = new Eventbuilder({
   },
 });
 
+//========================================TIER 1====================================================
 export const PropertyFire = new Eventbuilder({
   tier: 1,
   id: 'propertyfire',
@@ -258,7 +269,7 @@ export const TooMuchProducts = new Eventbuilder({
           {
             text: 'buy warehouse',
             description: `Buy a warehouse for <r>$${
-              productPrice * 2
+              productPrice * 1.5
             }</r> to store them.`,
             variant: 'succes',
             onClick() {
@@ -269,7 +280,7 @@ export const TooMuchProducts = new Eventbuilder({
                   onDamagePrice: productPrice / 15,
                   startedAt: productPrice / 4,
                   value: productPrice / 4,
-                  growVals: [3, 6],
+                  growVals: [6, 12],
                   sector: 'industry',
                   hideNameInModal: true,
                   prependInModal: 'Sell products',
@@ -277,7 +288,7 @@ export const TooMuchProducts = new Eventbuilder({
                     productPrice * 2
                   }</span>.`,
                 },
-                moneyGain: -(productPrice / 4),
+                moneyGain: -(productPrice * 1.5),
               };
             },
           },
@@ -303,12 +314,13 @@ export const TooMuchProducts = new Eventbuilder({
 export const Advertisment = new Eventbuilder({
   tier: 1,
   id: 'advertisment',
+  oneTime: true,
   generate(id) {
     let company = buildCompany(4);
     let coffeePrice = generateLargeMoney(3, 6, 500);
     return [
       {
-        title: `📰 Your media team decides that it's time to get advertisement. You can advertise in coffee shops, or on more effective billboards. Be warned: <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> already has advirtisement on these billboards.`,
+        title: `📰 Your media team decides that it's time to get advertisement. You can advertise in coffee shops, or on more effective billboards. Be warned: <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> already has advirtisement on these billboards. <div style="display: inline; transform: scale(0.7); font-size: 0.7em;" class="info-btn-wrapper modal-link" aria-description="12"><i style="tranform: scale(0.8) !important" class="fas fa-info-circle info-btn"></i></div>  `,
         buttons: [
           {
             text: 'Buy in coffeeshops',
@@ -331,24 +343,25 @@ export const Advertisment = new Eventbuilder({
             text: 'Buy in billboards',
             description: `Pay <r>$${
               coffeePrice * 1.5
-            }</r> for a 65% chance that “${
+            }</r> for a chance (click the info button for more info) that “${
               company.name
             }” will let you advertise on their billboards (that make around <g>$${
               coffeePrice / 5
             }</g> annually).`,
             variant: 'warning',
             onClick() {
-              let gotPermission = chance(65);
+              let gotPermission = chance(company.reputation);
               modal.changeModal({
                 title: `Permission ${gotPermission ? 'granted' : 'denied'}.`,
                 description:
                   `You now have paid <span class="red">$${
                     coffeePrice * 1.5
-                  }</span> ` + gotPermission
+                  }</span> ` +
+                  (gotPermission
                     ? `for an extra income of around <span class="green">$${
                         coffeePrice / 5
                       }</span> annually.`
-                    : `for nothing.`,
+                    : `for nothing.`),
                 options: {
                   footer: {
                     hideCancel: gotPermission,
@@ -363,7 +376,7 @@ export const Advertisment = new Eventbuilder({
                 incomeGain: gotPermission
                   ? {
                       name: 'Advertisment on billboards',
-                      annual: coffeePrice / 10,
+                      annual: coffeePrice / 5,
                       disbandable: true,
                     }
                   : undefined,
@@ -400,46 +413,43 @@ export const Advertisment = new Eventbuilder({
   },
 });
 
-export const LawsuitPersonal = new Eventbuilder({
-  id: 'lawsuitpersonal',
-  tier: 0,
+export const AbondenedFactory = new Eventbuilder({
+  tier: 1,
+  id: 'abondenedfactory',
   generate(_id) {
-    let person = stats.lastTransmission as string;
-    let amount = stats.getIndexedTransmission(1) as number;
+    let value = generateLargeMoney(3, 6, 600);
+    let repairCosts = generateLargeMoney(5, 8, 500) / 2;
+
     return [
       {
-        title: `&#9878;&#65039; ${person} is sueing you! They want to settle for <r>$${amount}</r>.`,
+        title: `🏭 An abondened factory is found in the woods. Do you keep it, knowing it will cost <r>$${repairCosts}</r> to repair, or do you want to sell it immediately?`,
         buttons: [
           {
-            text: 'settle',
-            description: `Pay <r>$${amount}</r> and just get this over with.`,
+            text: 'sell it',
+            description: `Sell the property and gain <g>$${value / 2}</g>`,
             variant: 'succes',
             onClick() {
-              return { moneyGain: -amount };
+              return {
+                moneyGain: value / 2,
+              };
             },
           },
           {
-            text: 'fight',
-            description: `Fight a legal battle, and risk your reputation.`,
-            variant: 'error',
+            text: 'keep it',
+            description: `Keep the property, but it starts out damaged.`,
+            variant: 'info',
             onClick() {
-              let caseWon = chance(50);
-              modal.changeModal({
-                title: `Case ${caseWon ? 'won' : 'lost'}`,
-                description: caseWon
-                  ? "You won the case, and didn't lose anything."
-                  : `Not only did you lose <span class="red">$${amount}</span>, you also lost 10% reputation.`,
-                options: {
-                  footer: {
-                    hideConfirm: true,
-                    cancelText: 'okay',
-                  },
-                },
-              });
-              modal.show();
               return {
-                moneyGain: caseWon ? 0 : -amount,
-                reputationGain: caseWon ? 0 : -15,
+                propertyGain: {
+                  name: 'factory',
+                  icon: 'industry',
+                  onDamagePrice: repairCosts,
+                  startedAt: value,
+                  value: value,
+                  growVals: [3, 10],
+                  sector: 'industry',
+                  damaged: true,
+                },
               };
             },
           },
@@ -450,30 +460,174 @@ export const LawsuitPersonal = new Eventbuilder({
   },
 });
 
-export const HarrasmentClaim = new Eventbuilder({
+export const EmployeeDeath = new Eventbuilder({
   tier: 1,
+  id: 'employeedeath',
+  generate(_id) {
+    let employeeName = grp();
+    let funeralPrice = generateLargeMoney(0, 5, 1600);
+    return [
+      {
+        title: `⚰\uFE0F Your employee, “${employeeName}”, has died of terminal cancer. Do you want to pay for the funeral? This will cost <r>$${funeralPrice}</r>`,
+        buttons: [
+          {
+            text: 'accept',
+            variant: 'succes',
+            description: `Pay <r>$${funeralPrice}</r> for a <g>10%</g> reputation boost.`,
+            onClick() {
+              return {
+                moneyGain: -funeralPrice,
+                reputationGain: 10,
+              };
+            },
+          },
+          {
+            text: 'decline',
+            variant: 'error',
+            description: 'Let the family pay the funeral.',
+            onClick() {
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const Truck = new Eventbuilder({
+  tier: 1,
+  id: 'truck',
+  shouldSkip() {
+    let options = stats.incomes.filter(
+      (v) => v.name.split(' ')[0] == 'Dropshipping'
+    );
+    return options.length == 0;
+  },
+  generate(_id) {
+    let options = stats.incomes.filter(
+      (v) => v.name.split(' ')[0] == 'Dropshipping'
+    );
+    let increaseAmount = generateLargeMoney(4, 11, 15);
+    let truckPrice = increaseAmount * 120;
+    return [
+      {
+        title: `🚛 To support your dropshipping you can buy your own truck for <r>$${truckPrice}</r>.`,
+        buttons: [
+          {
+            text: 'buy truck',
+            description: `increase all dropshipping income with <g>$${increaseAmount}</g> and get a truck.`,
+            variant: 'succes',
+            onClick() {
+              options.forEach((element) => {
+                element.annual += increaseAmount;
+              });
+              return {
+                moneyGain: -truckPrice,
+                propertyGain: {
+                  name: 'truck',
+                  icon: 'truck',
+                  sector: 'service',
+                  immune: true,
+                  onDamagePrice: 0,
+                  startedAt: truckPrice,
+                  value: truckPrice,
+                  growVals: [0, 0],
+                  onSell() {
+                    let updatedOptions = stats.incomes.filter(
+                      (v) => v.name.split(' ')[0] == 'Dropshipping'
+                    );
+                    updatedOptions.forEach((v) => {
+                      v.annual -= increaseAmount;
+                    });
+                  },
+                  sellDescription: 'All dropshipping income will be decreased.',
+                },
+              };
+            },
+          },
+          {
+            text: 'do nothing',
+            description: 'Nothing happens.',
+            variant: 'error',
+            onClick: () => {
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const Humantrafficking = new Eventbuilder({
+  tier: 1,
+  id: 'humantrafficking',
+  generate(id) {
+    let company: Company = {
+      name: grc(),
+      income: parseFloat((Math.floor(Math.random() * 30000) + 1000).toFixed(2)),
+      reputation: generateLargeMoney(5, 20, 1),
+    };
+    let payment = parseFloat((company.income / 5).toFixed(0));
+    return [
+      {
+        title: `🚨 You catch <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> on acts of human trafficking. They will pay you <g>$${payment}</g> for you to not report them.`,
+        buttons: [
+          {
+            text: 'report',
+            variant: 'succes',
+            description: `Report ${company.name} to authorities and gain a <g>7%</g> reputation boost.`,
+            onClick() {
+              return {
+                reputationGain: 7,
+              };
+            },
+          },
+          {
+            text: "don't report",
+            variant: 'error',
+            description: `Gain <g>$${payment}</g> for not snitching.`,
+            onClick() {
+              return {
+                moneyGain: payment,
+              };
+            },
+          },
+        ],
+      },
+      company,
+    ];
+  },
+});
+
+//==============================================TIER 2=========================================================
+export const HarrasmentClaim = new Eventbuilder({
+  tier: 2,
   id: 'harassmentclaim',
   generate(_id) {
     let person = grp();
     let harasser = grp();
-    let priceFire = generateLargeMoney(2, 6, 500);
+    let priceFire = generateLargeMoney(2, 6, 200);
     let lawsuitPrice = generateLargeMoney(4, 10, 700);
     return [
       {
         title: `🤕 “${person}” claims they are being harassed by one of your employees; “${harasser}”. They want you to fire them.`,
         buttons: [
           {
-            text: `fire ${harasser}`,
+            text: `fire`,
             description: `Fire ${harasser}, increasing your default expenses by <r>$${priceFire}</r>.`,
             variant: 'succes',
             onClick() {
-              stats.incomes[1].annual += 500;
+              stats.incomes[1].annual -= priceFire;
               stats.updateIncomes();
               return {};
             },
           },
           {
-            text: `demote ${harasser}`,
+            text: `demote`,
             description:
               'Lose no money, but <r>6%</r> reputation for letting a harasser work in your company.',
             variant: 'warning',
