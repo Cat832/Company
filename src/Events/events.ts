@@ -68,7 +68,7 @@ export const DirtyWaterFollowup = new Eventbuilder({
     let waterPrice = (stats.lastTransmission as number) * 1.5;
     return [
       {
-        title: `The media found out about your little water secret and wants you to pay <r>$${waterPrice}</r>.`,
+        title: `😡 The media found out about your little water secret and wants you to pay <r>$${waterPrice}</r>.`,
         buttons: [
           {
             text: "pay up",
@@ -104,7 +104,7 @@ export const DataScandal = new Eventbuilder({
     let settlePrice = generateLargeMoney(2, 6, 900);
     return [
       {
-        title: `People found out that the leaked data is real, and your reputation is shattered. What do you do?`,
+        title: `😡 People found out that the leaked data is real, and your reputation is shattered. What do you do?`,
         buttons: [
           {
             text: "settle",
@@ -984,6 +984,41 @@ export const LostWallet = new Eventbuilder({
   },
 });
 
+export const StrayDog = new Eventbuilder({
+  tier: 1,
+  id: "straydog",
+  generate(_id) {
+    return [
+      {
+        title: `🐶 A stray dog finds its way in the office and some people are getting attached to it. If you don't euthanise it, it will bring down company efficiency.`,
+        buttons: [
+          {
+            text: "murder that ass",
+            description: `Lose <r>6%</r> reputation due to you being a dog killer.`,
+            variant: "succes",
+            onClick() {
+              return {
+                reputationGain: -6,
+              };
+            },
+          },
+          {
+            text: "be a pussy",
+            description: `You will lose <r>$150</r> per year.`,
+            variant: "error",
+            onClick() {
+              stats.incomes[1].annual += 150;
+              stats.updateIncomes();
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
 export const VendingMachine = new Eventbuilder({
   tier: 1,
   id: "vendingmachine",
@@ -1074,6 +1109,30 @@ export const DataLeak = new Eventbuilder({
   },
 });
 
+const incomeGains = [
+  "factory",
+  "farm",
+  "lumber yard",
+  "orchard",
+  "bakery",
+  "supermarket",
+  "mine",
+  "greenhouse",
+  "pumpjack",
+  "power plant",
+  "data centre",
+  "gas pump",
+  "dam",
+  "museum",
+  "strip club",
+  "another, fancier strip club",
+  "zoo",
+  "panda exhibit",
+  "circus",
+  "palace",
+  "large national monument",
+  "construction site",
+];
 
 //==============================================TIER 2=========================================================
 export const HarrasmentClaim = new Eventbuilder({

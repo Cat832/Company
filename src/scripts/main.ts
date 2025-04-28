@@ -430,6 +430,7 @@ import {
   VendingMachine,
   DataLeak,
   DataScandal,
+  StrayDog,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
@@ -455,6 +456,7 @@ const possibleEvents: Eventbuilder[] = [
   LostWallet,
   OfficeParty,
   PropertyFire,
+  StrayDog,
   TechStartup,
   TooMuchProducts,
   UnionDemands,
