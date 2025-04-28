@@ -1110,29 +1110,42 @@ export const DataLeak = new Eventbuilder({
 });
 
 const incomeGains = [
-  "factory",
-  "farm",
-  "lumber yard",
-  "orchard",
-  "bakery",
-  "supermarket",
-  "mine",
-  "greenhouse",
-  "pumpjack",
-  "power plant",
-  "data centre",
-  "gas pump",
-  "dam",
-  "museum",
-  "strip club",
-  "another, fancier strip club",
-  "zoo",
-  "panda exhibit",
-  "circus",
-  "palace",
-  "large national monument",
-  "construction site",
+  {name:"factory", emoji:"🏭"},
+  {name:"farm", emoji:"🚜"},
+  {name:"lumber yard", emoji:"🪵"},
+  {name:"orchard", emoji:"🌳"},
+  {name:"bakery", emoji:"🥖"},
+  {name:"supermarket", emoji:"🏪"},
+  {name:"mine", emoji:"⛏\uFE0F"},
+  {name:"pumpjack", emoji:"🛢\uFE0F"},
+  {name:"power plant", emoji:"🔌"},
+  {name:"gas pump", emoji:"⛽"}
 ];
+
+export const CEOSellsThing = new Eventbuilder({
+  tier: 1,
+  id: 'ceosellsthing',
+  generate(id) {
+    let ceoName = grp();
+    let company = buildCompany(6);
+    let object = pickRandom(incomeGains);
+    let price = generateLargeMoney(2, 6, 120);
+    let income = generateLargeMoney(1, 4, 750);
+    return [{
+      title: `🤝 <span class="blue">${ceoName}</span>, the CEO of <span class="blue modal-link" aria-description="${id}">“${company.name}”</span>, is allowing shared custody of one of their ${object}s for <r>$${price}</r>.`,
+      buttons: [
+        {
+          text: 'pay',
+          description: `Pay <r>$${price}</r> for <g>$${income}</g> per year.`,
+          variant: 'succes',
+          onClick() {
+            
+          },
+        }
+      ]
+    }, company];
+  }
+})
 
 //==============================================TIER 2=========================================================
 export const HarrasmentClaim = new Eventbuilder({
