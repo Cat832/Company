@@ -4,7 +4,17 @@ import {
   updateIncometable,
   riseRandom,
 } from './incomes';
-import { Chart, registerables } from 'chart.js';
+import {
+  Chart,
+  registerables,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  Tooltip,
+  CategoryScale,
+} from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import '../styles/style.css';
@@ -32,7 +42,18 @@ let hasWarnedAboutRogue = false;
 let hasWarnedAboutDamagedProperties = false;
 type ModalDataType = { [key: string]: ModalConfig };
 const modalDB = rawModalData as ModalDataType;
-Chart.register(...registerables, zoomPlugin, annotationPlugin);
+Chart.register(
+  ...registerables,
+  zoomPlugin,
+  annotationPlugin,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  Tooltip
+);
 const startingMoney = 10000;
 const moneyInt = getElement<HTMLSpanElement>('money-int');
 const progressBar = document.getElementById('progress-bar') as HTMLElement;
@@ -83,6 +104,8 @@ getElement<HTMLButtonElement>('tier-btn').onclick = () => {
   (
     document.querySelector('.tier-upgrade-msg') as HTMLDivElement
   ).classList.remove('show');
+  CompanyChart.options.plugins!.title!.text = `Tier ${stats.currentTier}`;
+  CompanyChart.update();
   enableBody();
 };
 const tierDescriptions: Record<number, string> = {
@@ -99,7 +122,7 @@ export abstract class stats {
   private static _economy: number[] = [startingMoney];
   public static attemptTierUpgrade() {
     let tierUpgraded = false;
-    if (this.money >= 20000) {
+    if (this.money >= 20000 && this.currentTier == 1) {
       this.currentTier = 2;
       tierUpgraded = true;
     }
@@ -124,7 +147,7 @@ export abstract class stats {
       disbandable: true,
       safe: true,
     },
-    { name: 'Default expenses', annual: -400 },
+    { name: 'Default expenses', annual: -400, nonDynamic: true },
   ];
   public get totalProfit() {
     let qr = 0;
@@ -185,23 +208,30 @@ export abstract class stats {
       CompanyChart.data.labels = Array.from(dataset.data, () => '');
       CompanyChart.update();
     }
-    this.attemptTierUpgrade();
     moneyInt.innerHTML = `Current money: $${formatNumberWithPeriods(
       parseInt(this._economy[this._economy.length - 1].toFixed(0))
     )}`;
+    const max = Math.max(...this._economy);
+    const min = Math.min(...this._economy);
+    const buffer = (max - min) * 0.5 || 1000;
+    Object.assign(CompanyChart.options!.scales!.y!, {
+      min: parseInt((min - buffer).toFixed(0)),
+      max: parseInt((max + buffer).toFixed(0)),
+    });
+    CompanyChart.update();
+    this.attemptTierUpgrade();
   }
   public static simulateRandomEvent() {
-    let validChoice = false;
-    let index = Math.floor(Math.random() * possibleEvents.length);
-    let element = possibleEvents[index];
-    while (!validChoice) {
-      if (!element.shouldSkip() && element.tier == this.currentTier) {
-        validChoice = true;
-      } else {
-        index = Math.floor(Math.random() * possibleEvents.length);
-        element = possibleEvents[index];
-      }
-      if (element.oneTime) possibleEvents.splice(index, 1);
+    let options = possibleEvents.filter(
+      (event) => event.tier == this.currentTier && !event.shouldSkip()
+    );
+    let element = pickRandom(options);
+    if (element.oneTime) {
+      let index: number = -1;
+      possibleEvents.forEach((v, i) => {
+        if (v.id == element.id) index = i;
+      });
+      possibleEvents.splice(index, 1);
     }
     simulateEvent(element);
     updateLinks();
@@ -388,27 +418,47 @@ import {
   EmployeeDeath,
   Truck,
   Humantrafficking,
+  DirtyWaterFollowup,
+  DirtyWater,
+  TechStartup,
+  UnionDemands,
+  OfficeParty,
+  LostWallet,
+  CharityDonation,
+  CommunityGarden,
+  EmployeeInnovation,
+  VendingMachine,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
 
 const possibleEvents: Eventbuilder[] = [
   //Tier 0
+  DirtyWaterFollowup,
   LawsuitPersonal,
 
   //Tier 1
-  PropertyFire,
-  Dropshipping,
-  Hotdogshop,
-  TooMuchProducts,
-  Advertisment,
   AbondenedFactory,
+  Advertisment,
+  CharityDonation,
+  CommunityGarden,
+  DirtyWater,
+  Dropshipping,
   EmployeeDeath,
-  Truck,
+  EmployeeInnovation,
+  Hotdogshop,
   Humantrafficking,
+  LostWallet,
+  OfficeParty,
+  PropertyFire,
+  TechStartup,
+  TooMuchProducts,
+  UnionDemands,
+  VendingMachine,
 
   //Tier 2
   HarrasmentClaim,
+  Truck,
 ];
 
 stats.simulateRandomEvent();

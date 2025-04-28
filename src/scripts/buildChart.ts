@@ -24,7 +24,7 @@ export default function buildChart({
           label: 'worth',
           data: values,
           tension: 0.1,
-          fill: true,
+          fill: 'start',
           borderColor: lineColor,
           pointRadius: 0.2,
           borderWidth: defaultBorderWidth,
@@ -34,6 +34,22 @@ export default function buildChart({
     options: {
       responsive: false,
       maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: {
+            display: false, // ❌ no vertical grid lines
+          },
+        },
+        y: {
+          ticks: {
+            font: {
+              size: 8,
+            },
+          },
+          min: 8500,
+          max: 10500,
+        }
+      },
       plugins: {
         title: {
           display: true,
@@ -61,20 +77,30 @@ export default function buildChart({
             mode: 'x',
           },
         },
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false, // ❌ no vertical grid lines
-          },
-        },
-        y: {
-          ticks: {
-            font: {
-              size: 8,
-            },
-          },
-        },
+        annotation: {
+          annotations: {
+            Tier2Indicator: {
+              type: 'line',
+              scaleID: 'y',
+              value: 20000,
+              borderColor: 'black',
+              borderWidth: 2,
+              adjustScaleRange: false,
+              label: {
+                display: true,
+                content: "Tier 2",
+                color: 'white',
+                backgroundColor: 'black',
+                position: 'start',
+                font: {
+                  family: 'def',
+                  size: 8,
+                  weight: 'bold',
+                }
+              }
+            }
+          }
+        }
       },
     },
   });

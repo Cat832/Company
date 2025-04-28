@@ -5,8 +5,8 @@ import { buildCompany, getRandomProduct, grc, grp } from './grc';
 
 //========================================TIER 0====================================================
 /**Parameters:
- * @param firstWrite lawsuit value: number
- * @param secondWrite person name: string
+ * @param firstWrite lawsuit value: `number`
+ * @param secondWrite person name: `string`
  */
 export const LawsuitPersonal = new Eventbuilder({
   id: 'lawsuitpersonal',
@@ -48,6 +48,45 @@ export const LawsuitPersonal = new Eventbuilder({
               return {
                 moneyGain: caseWon ? 0 : -amount,
                 reputationGain: caseWon ? 0 : -15,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+/**Parameters:
+ * @param write waterPrice: `number`
+ */
+export const DirtyWaterFollowup = new Eventbuilder({
+  id: 'dirtywaterfollowup',
+  tier: 0,
+  generate(_id) {
+    waterIsFixed = true;
+    let waterPrice = (stats.lastTransmission as number) * 1.5;
+    return [
+      {
+        title: `The media found out about your little water secret and wants you to pay <r>$${waterPrice}</r>.`,
+        buttons: [
+          {
+            text: 'pay up',
+            description: `Pay <r>$${waterPrice}</r> for poisoning your water.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -waterPrice,
+              };
+            },
+          },
+          {
+            text: 'deny',
+            description: `Deny everything and lose <r>7%</r> reputation.`,
+            variant: 'error',
+            onClick() {
+              return {
+                reputationGain: -7,
               };
             },
           },
@@ -541,22 +580,422 @@ export const Humantrafficking = new Eventbuilder({
   },
 });
 
-// export const DirtyWater = new Eventbuilder({
-//   tier: 1,
-//   id: 'dirtywater',
-//   generate(_id) {
-//     let waterFilterPrice = generateLargeMoney()
+let waterIsFixed = false;
+export const DirtyWater = new Eventbuilder({
+  tier: 1,
+  id: 'dirtywater',
+  shouldSkip: () => waterIsFixed,
+  generate(_id) {
+    let waterFilterPrice = generateLargeMoney(3, 5, 700);
+    return [
+      {
+        title:
+          '🌊 There are traces of methane and lead found in the water what you produce. Do you cover this scandal up or take responsability?',
+        buttons: [
+          {
+            text: 'take responsability',
+            description: `Take responsability like an adult and improve your water filters for <r>$${waterFilterPrice}</r>.`,
+            variant: 'succes',
+            onClick() {
+              waterIsFixed = true;
+              return {
+                moneyGain: -waterFilterPrice,
+              };
+            },
+          },
+          {
+            text: 'cover up',
+            variant: 'error',
+            description:
+              'Cover the scandal, but risk that the media finds out.',
+            onClick() {
+              if (chance(20)) {
+                stats.write(waterFilterPrice);
+                return { triggerEvent: 'dirtywaterfollowup' };
+              }
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
 
-//     return [{
-//       title: '🌊 There are traces of methane and lead found in the water what you produce. Do you cover this scandal up or take responsability?',
-//       buttons: [{
-//         text: 'take responsability',
-//         description: 'Take responsability like an adult and improve your water filters for .',
-//         variant: 'succes'
-//       }]
-//     }, undefined]
-//   },
-// })
+export const OfficeParty = new Eventbuilder({
+  tier: 1,
+  id: 'officeparty',
+  oneTime: true,
+  generate(_id) {
+    let partyCost = generateLargeMoney(2, 5, 800);
+    return [
+      {
+        title: `🎉 Your employees are asking for an office party. It would cost <r>$${partyCost}</r> but could boost morale.`,
+        buttons: [
+          {
+            text: 'Throw party',
+            description: `Pay <r>$${partyCost}</r> for a <g>5%</g> reputation boost.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -partyCost,
+                reputationGain: 5,
+              };
+            },
+          },
+          {
+            text: 'Decline',
+            description: 'Lose <r>3%</r> reputation for being stingy.',
+            variant: 'error',
+            onClick() {
+              return {
+                reputationGain: -3,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const TechStartup = new Eventbuilder({
+  tier: 1,
+  id: 'techstartup',
+  oneTime: true,
+  generate(id) {
+    let startup: Company = {
+      name: `${grc()} Technologies`,
+      income: generateLargeMoney(4, 8, 200),
+      reputation: 85,
+    };
+    let investment = generateLargeMoney(3, 6, 1000);
+    return [
+      {
+        title: `💻 A tech startup called <span class="blue modal-link" aria-description="${id}">"${startup.name}"</span> is looking for investors. They're asking for <r>$${investment}</r>.`,
+        buttons: [
+          {
+            text: 'Invest',
+            description: `Invest <r>$${investment}</r> for potential annual returns.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -investment,
+                incomeGain: {
+                  name: `Investment in ${startup.name}`,
+                  annual: startup.income / 4,
+                  disbandable: true,
+                },
+              };
+            },
+          },
+          {
+            text: 'Decline',
+            description: 'Miss out on this investment opportunity.',
+            variant: 'error',
+            onClick() {
+              return {};
+            },
+          },
+        ],
+      },
+      startup,
+    ];
+  },
+});
+
+export const UnionDemands = new Eventbuilder({
+  tier: 1,
+  id: 'uniondemands',
+  shouldSkip: () => chance(70),
+  generate(_id) {
+    let raiseAmount = generateLargeMoney(0, 8, 250);
+    return [
+      {
+        title: `✊ Your workers are unionizing and demanding higher wages. They want an annual increase of <r>$${raiseAmount}</r> to your expenses.`,
+        buttons: [
+          {
+            text: 'Accept demands',
+            description: `Increase expenses by <r>$${raiseAmount}</r> but gain <g>8%</g> reputation.`,
+            variant: 'succes',
+            onClick() {
+              stats.incomes[1].annual -= raiseAmount;
+              stats.updateIncomes();
+              return {
+                reputationGain: 8,
+              };
+            },
+          },
+          {
+            text: 'Refuse',
+            description: 'Lose <r>10%</r> reputation and risk strikes.',
+            variant: 'error',
+            onClick() {
+              if (chance(30)) {
+                return {
+                  reputationGain: -10,
+                  incomeGain: {
+                    name: 'Strike losses',
+                    annual: -raiseAmount * 2,
+                    disbandable: true,
+                    disbandYearnumber: stats.yearNumber + 2,
+                  },
+                };
+              }
+              return {
+                reputationGain: -10,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const CharityDonation = new Eventbuilder({
+  tier: 1,
+  id: 'charitydonation',
+  oneTime: true,
+  generate(_id) {
+    let charityAmount = generateLargeMoney(1, 4, 1000);
+    return [
+      {
+        title: `❤️ A local charity is raising funds to help families in need. They ask if you'd like to donate <r>$${charityAmount}</r>.`,
+        buttons: [
+          {
+            text: 'donate generously',
+            description: `Pay <r>$${charityAmount}</r> and gain <g>12%</g> reputation.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -charityAmount,
+                reputationGain: 12,
+              };
+            },
+          },
+          {
+            text: 'small donation',
+            description: `Pay <r>$${
+              charityAmount / 2
+            }</r> and gain <g>6%</g> reputation.`,
+            variant: 'warning',
+            onClick() {
+              return {
+                moneyGain: -(charityAmount / 2),
+                reputationGain: 6,
+              };
+            },
+          },
+          {
+            text: 'decline politely',
+            description: 'No cost, but miss out on goodwill.',
+            variant: 'error',
+            onClick() {
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const EmployeeInnovation = new Eventbuilder({
+  tier: 1,
+  oneTime: true,
+  id: 'employeeinnovation',
+  generate(_id) {
+    let employeeName = grp();
+    let bonusCost = generateLargeMoney(1, 3, 500);
+    let incomeGain = generateLargeMoney(0, 5, 300);
+    return [
+      {
+        title: `💡 Your employee, <span class="blue">${employeeName}</span>, developed an efficiency improvement that could save money! They humbly ask for a <r>$${bonusCost}</r> bonus.`,
+        buttons: [
+          {
+            text: 'reward them',
+            description: `Pay <r>$${bonusCost}</r> and gain <g>$${incomeGain}</g> annually from their idea.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -bonusCost,
+                incomeGain: {
+                  name: `${employeeName}'s innovation`,
+                  annual: incomeGain,
+                  disbandable: true,
+                },
+                reputationGain: 5,
+              };
+            },
+          },
+          {
+            text: 'acknowledge lightly',
+            description: `Pay <r>$${bonusCost / 2}</r> and gain <g>$${
+              incomeGain / 2
+            }</g> annually.`,
+            variant: 'warning',
+            onClick() {
+              return {
+                moneyGain: -(bonusCost / 2),
+                incomeGain: {
+                  name: `${employeeName}'s minor improvement`,
+                  annual: incomeGain / 2,
+                  disbandable: true,
+                },
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const CommunityGarden = new Eventbuilder({
+  tier: 1,
+  id: 'communitygarden',
+  oneTime: true,
+  generate(_id) {
+    let gardenCost = generateLargeMoney(2, 5, 800);
+    return [
+      {
+        title: `🌱 The neighborhood wants to start a community garden on unused land you own. They ask for <r>$${gardenCost}</r> to help fund it.`,
+        buttons: [
+          {
+            text: 'fund fully',
+            description: `Pay <r>$${gardenCost}</r> and gain <g>15%</g> reputation.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: -gardenCost,
+                reputationGain: 15,
+                propertyGain: {
+                  name: 'community garden',
+                  icon: 'tree',
+                  sector: 'economy',
+                  immune: true,
+                  onDamagePrice: 0,
+                  startedAt: gardenCost,
+                  value: gardenCost,
+                  growVals: [1, 3],
+                  sellDescription:
+                    'Selling would anger the community (-10% reputation).',
+                  onSell() {
+                    stats.reputation -= 10;
+                  },
+                },
+              };
+            },
+          },
+          {
+            text: 'donate land only',
+            description: `No cost, but gain <g>8%</g> reputation.`,
+            variant: 'warning',
+            onClick() {
+              return {
+                reputationGain: 8,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const LostWallet = new Eventbuilder({
+  tier: 1,
+  id: 'lostwallet',
+  generate(_id) {
+    let reward = generateLargeMoney(0, 5, 200); // Small cash reward (e.g., $200–$800)
+    return [
+      {
+        title: `💵 You find a lost wallet on the street. Do you return it to the owner?`,
+        buttons: [
+          {
+            text: 'return it',
+            description: `Gain <g>$${reward}</g> as a thank-you and <g>3%</g> reputation.`,
+            variant: 'succes',
+            onClick() {
+              return {
+                moneyGain: reward,
+                reputationGain: 3,
+              };
+            },
+          },
+          {
+            text: 'keep the cash',
+            description: `Take <g>$${reward * 1.5}</g>.`,
+            variant: 'error',
+            onClick() {
+              return {
+                moneyGain: reward * 1.5,
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const VendingMachine = new Eventbuilder({
+  tier: 1,
+  id: 'vendingmachine',
+  oneTime: true,
+  generate(id) {
+    let company: Company = {
+      name: 'DGA vending',
+      income: 12983456,
+      reputation: 85,
+    };
+
+    let produceValue = generateLargeMoney(0, 60, 10);
+
+    return [
+      {
+        title: `🎁 A vending machine company called <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> wants to give you a vending machine!`,
+        buttons: [
+          {
+            text: 'accept gift',
+            description: 'Accept the gift and get a vending machine.',
+            variant: 'succes',
+            onClick: () => {
+              return {
+                propertyGain: {
+                  name: 'vending machine',
+                  icon: 'store',
+                  onDamagePrice: 60,
+                  sector: 'economy',
+                  startedAt: produceValue,
+                  value: produceValue,
+                  growVals: [6, 10],
+                },
+              };
+            },
+          },
+          {
+            text: 'decline',
+            variant: 'error',
+            description: 'Refuse the gift.',
+            onClick() {
+              return {};
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
 
 //==============================================TIER 2=========================================================
 export const HarrasmentClaim = new Eventbuilder({
