@@ -97,7 +97,7 @@ export abstract class stats {
   private static _transmissions: any[] = [];
   private static _reputation: number = 50;
   private static _economy: number[] = [startingMoney];
-  public static upgradeTier() {
+  public static attemptTierUpgrade() {
     let tierUpgraded = false;
     if (this.money >= 20000) {
       this.currentTier = 2;
@@ -185,9 +185,7 @@ export abstract class stats {
       CompanyChart.data.labels = Array.from(dataset.data, () => '');
       CompanyChart.update();
     }
-    if (this.money >= 20000) {
-      this.currentTier = 2;
-    }
+    this.attemptTierUpgrade();
     moneyInt.innerHTML = `Current money: $${formatNumberWithPeriods(
       parseInt(this._economy[this._economy.length - 1].toFixed(0))
     )}`;
@@ -462,11 +460,11 @@ document.addEventListener('keydown', (e) => {
         }
         break;
       case command.startsWith('upgrade'):
-        stats.upgradeTier();
+        stats.attemptTierUpgrade();
         break;
       case command == 'force tier 2':
         stats.money = stats.money + 20000;
-        stats.upgradeTier();
+        stats.attemptTierUpgrade();
         break;
       default:
         alert('Command not recognized');

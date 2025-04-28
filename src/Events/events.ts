@@ -257,6 +257,7 @@ export const Dropshipping = new Eventbuilder({
 
 export const TooMuchProducts = new Eventbuilder({
   tier: 1,
+  oneTime: true,
   id: 'toomuchproducts',
   generate(_id) {
     let productPrice = generateLargeMoney(40, 90, 30);
@@ -415,6 +416,7 @@ export const Advertisment = new Eventbuilder({
 
 export const AbondenedFactory = new Eventbuilder({
   tier: 1,
+  oneTime: true,
   id: 'abondenedfactory',
   generate(_id) {
     let value = generateLargeMoney(3, 6, 600);
@@ -462,6 +464,7 @@ export const AbondenedFactory = new Eventbuilder({
 
 export const EmployeeDeath = new Eventbuilder({
   tier: 1,
+  oneTime: true,
   id: 'employeedeath',
   generate(_id) {
     let employeeName = grp();
@@ -496,8 +499,120 @@ export const EmployeeDeath = new Eventbuilder({
   },
 });
 
-export const Truck = new Eventbuilder({
+export const Humantrafficking = new Eventbuilder({
   tier: 1,
+  oneTime: true,
+  id: 'humantrafficking',
+  generate(id) {
+    let company: Company = {
+      name: grc(),
+      income: parseFloat((Math.floor(Math.random() * 30000) + 1000).toFixed(2)),
+      reputation: generateLargeMoney(5, 20, 1),
+    };
+    let payment = parseFloat((company.income / 5).toFixed(0));
+    return [
+      {
+        title: `🚨 You catch <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> on acts of human trafficking. They will pay you <g>$${payment}</g> for you to not report them.`,
+        buttons: [
+          {
+            text: 'report',
+            variant: 'succes',
+            description: `Report ${company.name} to authorities and gain a <g>7%</g> reputation boost.`,
+            onClick() {
+              return {
+                reputationGain: 7,
+              };
+            },
+          },
+          {
+            text: "don't report",
+            variant: 'error',
+            description: `Gain <g>$${payment}</g> for not snitching.`,
+            onClick() {
+              return {
+                moneyGain: payment,
+              };
+            },
+          },
+        ],
+      },
+      company,
+    ];
+  },
+});
+
+// export const DirtyWater = new Eventbuilder({
+//   tier: 1,
+//   id: 'dirtywater',
+//   generate(_id) {
+//     let waterFilterPrice = generateLargeMoney()
+
+//     return [{
+//       title: '🌊 There are traces of methane and lead found in the water what you produce. Do you cover this scandal up or take responsability?',
+//       buttons: [{
+//         text: 'take responsability',
+//         description: 'Take responsability like an adult and improve your water filters for .',
+//         variant: 'succes'
+//       }]
+//     }, undefined]
+//   },
+// })
+
+//==============================================TIER 2=========================================================
+export const HarrasmentClaim = new Eventbuilder({
+  tier: 2,
+  id: 'harassmentclaim',
+  generate(_id) {
+    let person = grp();
+    let harasser = grp();
+    let priceFire = generateLargeMoney(2, 6, 200);
+    let lawsuitPrice = generateLargeMoney(4, 10, 700);
+    return [
+      {
+        title: `🤕 “${person}” claims they are being harassed by one of your employees; “${harasser}”. They want you to fire them.`,
+        buttons: [
+          {
+            text: `fire`,
+            description: `Fire ${harasser}, increasing your default expenses by <r>$${priceFire}</r>.`,
+            variant: 'succes',
+            onClick() {
+              stats.incomes[1].annual -= priceFire;
+              stats.updateIncomes();
+              return {};
+            },
+          },
+          {
+            text: `demote`,
+            description:
+              'Lose no money, but <r>6%</r> reputation for letting a harasser work in your company.',
+            variant: 'warning',
+            onClick() {
+              return {
+                reputationGain: -6,
+              };
+            },
+          },
+          {
+            text: 'do nothing',
+            description: `Do nothing and risk a lawsuit`,
+            variant: 'error',
+            onClick() {
+              stats.write(lawsuitPrice);
+              stats.write(person);
+              return {
+                triggerEvent: 'lawsuitpersonal',
+              };
+            },
+          },
+        ],
+      },
+      undefined,
+    ];
+  },
+});
+
+export const Truck = new Eventbuilder({
+  tier: 2,
   id: 'truck',
   shouldSkip() {
     let options = stats.incomes.filter(
@@ -553,100 +668,6 @@ export const Truck = new Eventbuilder({
             variant: 'error',
             onClick: () => {
               return {};
-            },
-          },
-        ],
-      },
-      undefined,
-    ];
-  },
-});
-
-export const Humantrafficking = new Eventbuilder({
-  tier: 1,
-  id: 'humantrafficking',
-  generate(id) {
-    let company: Company = {
-      name: grc(),
-      income: parseFloat((Math.floor(Math.random() * 30000) + 1000).toFixed(2)),
-      reputation: generateLargeMoney(5, 20, 1),
-    };
-    let payment = parseFloat((company.income / 5).toFixed(0));
-    return [
-      {
-        title: `🚨 You catch <span class="blue modal-link" aria-description="${id}">“${company.name}”</span> on acts of human trafficking. They will pay you <g>$${payment}</g> for you to not report them.`,
-        buttons: [
-          {
-            text: 'report',
-            variant: 'succes',
-            description: `Report ${company.name} to authorities and gain a <g>7%</g> reputation boost.`,
-            onClick() {
-              return {
-                reputationGain: 7,
-              };
-            },
-          },
-          {
-            text: "don't report",
-            variant: 'error',
-            description: `Gain <g>$${payment}</g> for not snitching.`,
-            onClick() {
-              return {
-                moneyGain: payment,
-              };
-            },
-          },
-        ],
-      },
-      company,
-    ];
-  },
-});
-
-//==============================================TIER 2=========================================================
-export const HarrasmentClaim = new Eventbuilder({
-  tier: 2,
-  id: 'harassmentclaim',
-  generate(_id) {
-    let person = grp();
-    let harasser = grp();
-    let priceFire = generateLargeMoney(2, 6, 200);
-    let lawsuitPrice = generateLargeMoney(4, 10, 700);
-    return [
-      {
-        title: `🤕 “${person}” claims they are being harassed by one of your employees; “${harasser}”. They want you to fire them.`,
-        buttons: [
-          {
-            text: `fire`,
-            description: `Fire ${harasser}, increasing your default expenses by <r>$${priceFire}</r>.`,
-            variant: 'succes',
-            onClick() {
-              stats.incomes[1].annual -= priceFire;
-              stats.updateIncomes();
-              return {};
-            },
-          },
-          {
-            text: `demote`,
-            description:
-              'Lose no money, but <r>6%</r> reputation for letting a harasser work in your company.',
-            variant: 'warning',
-            onClick() {
-              return {
-                reputationGain: -6,
-              };
-            },
-          },
-          {
-            text: 'do nothing',
-            description: `Do nothing and risk a lawsuit`,
-            variant: 'error',
-            onClick() {
-              stats.write(lawsuitPrice);
-              stats.write(person);
-              return {
-                triggerEvent: 'lawsuitpersonal',
-              };
             },
           },
         ],

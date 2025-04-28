@@ -5,13 +5,13 @@
     "options": {
       "footer": {
         "hideCancel": true,
-        "confirmText": "okay"
+        "confirmText": "Okay"
       }
     }
   },
   "12": {
     "title": "Tip",
-    "description": "The chance of the company allowing you to be on their billboards is equal to their reputation. Whenever there is a chance a company does a good deed, you always should check their reputation.<hr>Click the company's name (highlighted in blue) to see the information about the company.",
+    "description": "The chance of the company allowing you to be on their billboards is equal to their reputation. Whenever there is a chance a company does a good deed, you should always check their reputation.<hr>Click the company's name (highlighted in blue) to see the information about the company.",
     "options": {
       "footer": {
         "hideCancel": true,
