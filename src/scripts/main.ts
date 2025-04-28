@@ -428,12 +428,15 @@ import {
   CommunityGarden,
   EmployeeInnovation,
   VendingMachine,
+  DataLeak,
+  DataScandal,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
 
 const possibleEvents: Eventbuilder[] = [
   //Tier 0
+  DataScandal,
   DirtyWaterFollowup,
   LawsuitPersonal,
 
@@ -442,6 +445,7 @@ const possibleEvents: Eventbuilder[] = [
   Advertisment,
   CharityDonation,
   CommunityGarden,
+  DataLeak,
   DirtyWater,
   Dropshipping,
   EmployeeDeath,
