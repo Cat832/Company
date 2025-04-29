@@ -1,3 +1,5 @@
+import { disabled, getLast } from "./main";
+
 export interface ModalOptions {
   footer?: {
     hideCancel?: boolean;
@@ -32,13 +34,15 @@ export default class Modal {
   private static cancelElement = getElement<HTMLButtonElement>('cancel-btn');
   private static confirmElement = getElement<HTMLButtonElement>('confirm-btn');
 
-  z_title: string;
-  z_description: string;
+  private z_title: string;
+  private z_description: string;
   options: ModalOptions;
   visible: boolean;
   onConfirm: () => void;
+  que: ModalConfig[];
 
   constructor({ onConfirm, title, description, options }: ModalConfig) {
+    this.que = [];
     this.z_title = title || "Title didn't load.";
     this.z_description = description || "Description didn't load.";
     this.options = typeof options == 'undefined' ? {} : options;
@@ -83,15 +87,21 @@ export default class Modal {
   }
 
   show() {
+    if (disabled) return;
     this.visible = true;
     if (Modal.element.classList.contains('show')) return;
     Modal.element.classList.add('show');
   }
 
   close() {
-    this.visible = false;
-    if (!Modal.element.classList.contains('show')) return;
-    Modal.element.classList.remove('show');
+    if (this.que.length == 0) {
+      this.visible = false;
+      if (!Modal.element.classList.contains('show')) return;
+      Modal.element.classList.remove('show');
+    } else {
+      this.forceChange(getLast(this.que));
+      this.que.splice(this.que.length - 1, 1);
+    }
   }
 
   toggleVisibility() {
@@ -99,7 +109,7 @@ export default class Modal {
     else this.show();
   }
 
-  changeModal({ onConfirm, title, description, options }: ModalConfig) {
+  forceChange({ onConfirm, title, description, options }: ModalConfig) {
     this.title = title || "Title didn't load.";
     this.description = description || "Description didn't load";
     this.onConfirm = () => {
@@ -108,6 +118,14 @@ export default class Modal {
     };
     this.options = typeof options == 'undefined' ? {} : options;
     this.update();
+  }
+
+  changeModal(config: ModalConfig) {
+    if (this.visible) {
+      this.que.push(config);
+    } else {
+      this.forceChange(config);
+    }
   }
 
   get title() {
