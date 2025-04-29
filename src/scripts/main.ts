@@ -431,6 +431,7 @@ import {
   DataLeak,
   DataScandal,
   StrayDog,
+  CEOSellsThing,
 } from '../Events/events';
 import { updateProperties as updatePropertiesTable } from './properties';
 import { spawnCash } from './spawnCashsign';
@@ -444,6 +445,7 @@ const possibleEvents: Eventbuilder[] = [
   //Tier 1
   AbondenedFactory,
   Advertisment,
+  CEOSellsThing,
   CharityDonation,
   CommunityGarden,
   DataLeak,
