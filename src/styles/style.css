@@ -2,7 +2,7 @@
 @import url('./closebtn.css');
 @import url('./properties.css');
 @import url('./cash.css');
-
+@import url('./office.css');
 
 :root {
   --rt-color-white: #fff;

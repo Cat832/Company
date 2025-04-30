@@ -13,9 +13,6 @@ export function grc(): string {
   let index = Math.floor(Math.random() * companies.length);
   let element = companies[index];
   companies.splice(index, 1);
-  if (element == undefined) {
-    console.log(companies, index);
-  }
   return element;
 }
 export function grp(): string {

@@ -15,22 +15,19 @@ export interface ModalConfig {
   description?: string;
   options?: ModalOptions;
 }
-
-export function getElement<T>(id: string): T {
+export function getElement<T extends HTMLElement>(id: string): T {
   return document.getElementById(id) as T;
 }
+export function getElementWithClass<T extends HTMLElement>(className: string): T {
+  return document.querySelector(`.${className}`) as T;
+}
+const getDiv = (id: string) => getElement<HTMLDivElement>(id);
 
 export default class Modal {
-  private static element = getElement<HTMLDivElement>('modal');
-  private static footerElement: HTMLDivElement = document.getElementById(
-    'modal-footer'
-  ) as HTMLDivElement;
-  private static titleElement: HTMLHeadingElement = document.getElementById(
-    'modal-title'
-  ) as HTMLHeadingElement;
-  private static textElement: HTMLSpanElement = document.getElementById(
-    'modal-text'
-  ) as HTMLSpanElement;
+  private static element = getDiv('modal');
+  private static footerElement = getDiv('modal-footer');
+  private static titleElement = getElement<HTMLHeadingElement>('modal-title');
+  private static textElement = getElement<HTMLSpanElement>('modal-text');
   private static cancelElement = getElement<HTMLButtonElement>('cancel-btn');
   private static confirmElement = getElement<HTMLButtonElement>('confirm-btn');
 

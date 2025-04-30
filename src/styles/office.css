@@ -1,0 +1,147 @@
+:root { --animation-duration: 0.6s }
+@keyframes dissapear {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0); }
+}
+@keyframes appear {
+  0% { opacity: 0; transform: scale(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+dialog.offices-modal {
+  animation: appear var(--animation-duration) forwards ease-in-out;
+  border: 1px solid rgb(208, 208, 208);
+  box-shadow: 10px 10px 20px rgba(0,0,0,0.3),
+    -10px -10px 20px rgba(0,0,0,0.3);
+
+  width: calc(100vw - 5em);
+  height: calc(100vh - 5em);
+  overflow-y: auto;
+  border-radius: 1em;
+  opacity: 1;
+  transition: 0.4s ease-in-out;
+}
+
+dialog.hideanimation::backdrop, dialog.hideanimation {
+  animation: dissapear var(--animation-duration) forwards ease-in-out;
+}
+
+#offices-close {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+.offices-ranks {
+  position: absolute;
+  right: 1em;
+  bottom: 1em;
+  background-color: white;
+  box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+  border-radius: 0.7em;
+  font-family: 'def';
+}
+
+ol.list-group {
+  padding-left: 0em;
+  margin-block: 0;
+  min-width: 10em;
+}
+
+li.list-group-item {
+  border-bottom: 1px solid #eeeeee;
+  padding: 0.4em;
+  display: flex;
+  justify-content: space-between;
+}
+
+li.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.salery-input {
+  margin-left: 1em;
+  width: 6em;
+  transition: 0.15s ease-in-out;
+  font-family: 'def';
+  border: 1px solid #eeeeee;
+  border-radius: 0.25rem;
+}
+
+.offices-box {
+  margin-top: 12px;
+  border-radius: 1em;
+  height: calc(100vh - 9em - 12px);
+  overflow-y: auto;
+}
+
+.offices-title {
+  font-family: 'def';
+  margin-block: 0;
+}
+
+.office {
+  margin-block: 1em;
+}
+.office:first-child { margin-block-start: 0; }
+.office:last-child { margin-block-end: 0; }
+
+.office-top {
+  background-color: #006d77;
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 0.75em;
+  /* display: flex;
+  justify-content: space-between; */
+}
+
+.office-name {
+  font-family: 'def';
+  color: white;
+}
+
+.office-name-input {
+  transition: 0.15s ease-in-out;
+  font-family: 'def';
+  border: 1px solid #eeeeee;
+  min-width: 30%;
+  border-radius: 0.4em;
+  padding: 0.25em;
+}
+
+.office-name-input:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgb(138, 175, 230);
+}
+
+.salery-input:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.15rem rgb(138, 175, 230);
+}
+
+.office-bottom {
+  border-radius: 0 0 0.75rem 0.75rem;
+  background-color: #eeeeee;
+  min-height: 0.5em;
+  padding: 0.75em;
+  display: flex;
+  gap: 12px;
+}
+
+.office-edit-btn, .office-add-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.office-section {
+  flex: 1;
+  padding: 1em;
+  background-color: white;
+}
+
+.office-section-manager {
+  min-height: 3em;
+}
+

@@ -20,6 +20,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import '../styles/style.css';
 import '../styles/colorpicker.css';
 import '../styles/table.css';
+import './office';
 import setupColorpicker from './colorpicker';
 import buildChart from './buildChart';
 import Modal, { getElement, ModalConfig } from './modal';
@@ -61,7 +62,6 @@ const progressInt = document.getElementById('progress-int') as HTMLSpanElement;
 const incomeList = document.querySelector('.income-list') as HTMLDivElement;
 const incomeTable = getElement<HTMLTableSectionElement>('income-table');
 function updateIncomelist() {
-  console.log(incomeList.firstChild);
   const count = incomeTable.children.length;
   incomeList.style.setProperty('--children-count', count.toString());
 }
@@ -383,11 +383,6 @@ stats.reputation = 50;
 
 //Modal code!
 export const modal = new Modal({});
-document.addEventListener('keydown', (e) => {
-  if (e.key == 'Escape') {
-    modal.close();
-  }
-});
 stats.updateProperties();
 
 desicionManager.listenFor = (a) => {
@@ -468,15 +463,12 @@ const possibleEvents: Eventbuilder[] = [
   HarrasmentClaim,
   Truck,
 ];
-
 stats.simulateRandomEvent();
 
 function updateLinks() {
   (document.querySelectorAll('.modal-link') as NodeListOf<HTMLElement>).forEach(
     (element) => {
-      console.log(element);
       let modalId = element.ariaDescription as string;
-      console.log(modalId);
       if (modalId == 'decorative') return;
       if (modalId.startsWith('ts')) {
         let config = companiesTS[modalId];
@@ -501,31 +493,31 @@ function updateLinks() {
   );
 }
 
-let admin = false;
-document.addEventListener('keydown', (e) => {
-  if (e.key == 'o') {
-    if (!admin && prompt('password?') !== 'ibseSo!1') return;
-    if (!admin) alert('logged in');
-    admin = true;
-    let command = prompt('Type command') || '';
-    switch (true) {
-      case command.startsWith('money'):
-        try {
-          let amount = parseInt(command.split(' ')[1]);
-          stats.money = stats.money + amount;
-        } catch {
-          alert('command did not work');
-        }
-        break;
-      case command.startsWith('upgrade'):
-        stats.attemptTierUpgrade();
-        break;
-      case command == 'force tier 2':
-        stats.money = stats.money + 20000;
-        stats.attemptTierUpgrade();
-        break;
-      default:
-        alert('Command not recognized');
-    }
-  }
-});
+// let admin = false;
+// document.addEventListener('keydown', (e) => {
+//   if (e.key == 'o') {
+//     if (!admin && prompt('password?') !== 'ibseSo!1') return;
+//     if (!admin) alert('logged in');
+//     admin = true;
+//     let command = prompt('Type command') || '';
+//     switch (true) {
+//       case command.startsWith('money'):
+//         try {
+//           let amount = parseInt(command.split(' ')[1]);
+//           stats.money = stats.money + amount;
+//         } catch {
+//           alert('command did not work');
+//         }
+//         break;
+//       case command.startsWith('upgrade'):
+//         stats.attemptTierUpgrade();
+//         break;
+//       case command == 'force tier 2':
+//         stats.money = stats.money + 20000;
+//         stats.attemptTierUpgrade();
+//         break;
+//       default:
+//         alert('Command not recognized');
+//     }
+//   }
+// });

@@ -9,7 +9,7 @@ export function deleteWithName(x: string, incomeList: Income[]) {
   let list = [...incomeList];
   for (let i = 0; i < list.length; i++) {
     const element = list[i];
-    console.log(element);
+    element;
     if (element.name !== x) {
       qr.push(element);
     }
@@ -17,11 +17,14 @@ export function deleteWithName(x: string, incomeList: Income[]) {
   return qr;
 }
 
-function propertiesToStr(safe: boolean | undefined, nonDynamic: boolean | undefined) {
+function propertiesToStr(
+  safe: boolean | undefined,
+  nonDynamic: boolean | undefined
+) {
   if (safe && nonDynamic) {
     return "will not go rogue and can't change.";
   } else if (safe) {
-    return "will not go rogue."
+    return 'will not go rogue.';
   } else {
     return "can't change.";
   }
@@ -36,7 +39,9 @@ export function updateIncometable(
     qr += `<tr class="income-table-row ${
       v.disbandable ? 'pointer' : 'non-disbandable'
     }" id="itr-${v.name.replace(' ', '_')}">
-        <td colspan="2" class="income-table-cell">${v.name}${!v.disbandable ? '🔒':''}</td>
+        <td colspan="2" class="income-table-cell">${v.name}${
+      !v.disbandable ? '🔒' : ''
+    }</td>
         <td class="income-table-cell ${v.annual > 0 ? 'profit' : 'noprofit'}">${
       v.annual < 0 ? '-' : ''
     }$${Math.abs(v.annual)}</td>
@@ -80,10 +85,15 @@ export function growRandom(num: number): number {
 }
 
 export function riseRandom(num: number, min: number, max: number): number {
-  return parseFloat((num * (1 + (Math.random() * (max - min) + min) / 100)).toFixed(0));
+  return parseFloat(
+    (num * (1 + (Math.random() * (max - min) + min) / 100)).toFixed(0)
+  );
 }
 
-export function isOriginalInList<T extends Income | Property>(x: T, list: T[]): boolean {
+export function isOriginalInList<T extends Income | Property>(
+  x: T,
+  list: T[]
+): boolean {
   for (const element of list) {
     if (element.name == x.name) {
       return true;
